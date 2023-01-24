@@ -24,6 +24,9 @@ export class User {
   role: string;
 
   @Column()
+  password_hash: string;
+
+  @Column()
   workplaceId: number;
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace

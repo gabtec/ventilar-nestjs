@@ -12,4 +12,6 @@ export class WardsService {
   async getAll() {
     return await this.wardsRepository.find();
   }
+
+  // async create() {}
 }
