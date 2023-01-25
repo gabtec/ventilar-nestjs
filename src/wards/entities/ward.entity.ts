@@ -1,4 +1,6 @@
+import { Order } from 'src/orders/entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
 import {
   Column,
   CreateDateColumn,
@@ -21,6 +23,12 @@ export class Ward {
 
   @OneToMany(() => User, (user) => user.workplace)
   users: User[];
+
+  @OneToMany(() => Ventilator, (vent) => vent.park)
+  ventilators: Ventilator[];
+
+  @OneToMany((type) => Order, (order) => order.from_srv)
+  orders: Order[];
 
   @CreateDateColumn()
   created_at: string;

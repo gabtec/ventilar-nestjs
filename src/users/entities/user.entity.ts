@@ -26,13 +26,16 @@ export class User {
   @Column()
   password_hash: string;
 
+  // @Column()
+  // workplaceId: number;
   @Column()
-  workplaceId: number;
+  ward_id: number;
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace
-  @ManyToOne(() => Ward, (ward) => ward.users)
-  @JoinColumn()
-  workplace: number;
+  @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
+  @JoinColumn({ name: 'ward_id' })
+  // workplace: number;
+  workplace: Ward;
 
   @CreateDateColumn()
   created_at: string;

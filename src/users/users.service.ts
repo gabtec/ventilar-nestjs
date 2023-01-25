@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/auth/crypto.service';
+import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
@@ -10,6 +11,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Ward)
+    private readonly wardsRepository: Repository<Ward>,
     private readonly cryptoService: CryptoService,
   ) {}
 
@@ -23,7 +26,8 @@ export class UsersService {
       // relations: { workplace: true },
       relations: ['workplace'],
       where: {
-        workplaceId: id,
+        // workplaceId: id,
+        ward_id: id,
       },
     });
   }
@@ -73,7 +77,8 @@ export class UsersService {
       name: userDto.name,
       mec: 9999,
       role: 'admin',
-      workplaceId: 1,
+      // workplaceId: 1,
+      workplace: await this.wardsRepository.create({ id: 1 }),
       password_hash: hash,
     });
     console.log(admin);

@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { CryptoService } from './crypto.service';
 import { LoginCredentialsDto } from './dtos/login-credentials.dto';
-import { JwtPayload } from './jwt-payload.interface';
+import { JwtPayload } from './jwt/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,6 @@ export class AuthService {
 
   async login(credentials: LoginCredentialsDto) {
     const { username, password } = credentials;
-    console.log(credentials);
 
     try {
       const mec = parseInt(username, 10);
@@ -51,5 +50,10 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException('Invalid credentials!');
     }
+  }
+
+  async me(id: number) {
+    console.log(id);
+    return this.usersService.getUserById(id);
   }
 }

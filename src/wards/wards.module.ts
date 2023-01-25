@@ -8,5 +8,6 @@ import { WardsService } from './wards.service';
   imports: [TypeOrmModule.forFeature([Ward])],
   controllers: [WardsController],
   providers: [WardsService],
+  // exports: [WardsModule],
 })
 export class WardsModule {}
