@@ -13,5 +13,10 @@ export class WardsService {
     return await this.wardsRepository.find();
   }
 
-  // async create() {}
+  async getAllVentilatorsInAPark(id: number) {
+    return await this.wardsRepository.find({
+      where: { id },
+      relations: ['ventilators'],
+    });
+  }
 }

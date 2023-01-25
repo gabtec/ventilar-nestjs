@@ -5,11 +5,12 @@ import {
   Entity,
   JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('t_ventilators')
 export class Ventilator {
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,13 +25,13 @@ export class Ventilator {
   serial: string;
 
   @Column('varchar', { length: 4 })
-  category: ['VI', 'VNI'];
+  category: 'VI' | 'VNI';
 
   @Column()
   parked_at: number; // ward_id where it's placed
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToMany((type) => Ward, (park) => park.ventilators)
+  @OneToOne((type) => Ward, (park) => park.ventilators)
   @JoinColumn({ name: 'parked_at' })
   park: Ward;
 

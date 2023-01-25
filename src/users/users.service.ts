@@ -65,14 +65,14 @@ export class UsersService {
 
   async register(userDto: RegisterUserDto) {
     const usersCount = await this.usersRepository.count();
-    console.log(usersCount);
+
     if (usersCount > 0) {
       throw new NotFoundException('Route Not Found!');
     }
 
-    console.log('you can register');
     const hash = await this.cryptoService.hashPassword(userDto.password);
 
+    // Must pre-exist the ward with id=1
     const admin = this.usersRepository.create({
       name: userDto.name,
       mec: 9999,
@@ -81,7 +81,6 @@ export class UsersService {
       workplace: await this.wardsRepository.create({ id: 1 }),
       password_hash: hash,
     });
-    console.log(admin);
 
     return this.usersRepository.save(admin);
   }
