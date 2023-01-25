@@ -11,9 +11,19 @@ export class UsersController {
     return await this.usersService.getAll();
   }
 
+  @Get('/:id')
+  async getUserById(@Param('id') id: string) {
+    return await this.usersService.getUserById(parseInt(id, 10));
+  }
+
+  @Get('/mec/:mec')
+  async getUserByMec(@Param('mec') mec: string) {
+    return await this.usersService.getUserByMec(parseInt(mec, 10));
+  }
+
   @Get('/by_ward/:wardID')
   async getAllByWard(@Param('wardID') wardID: string) {
-    return await this.usersService.getUsersByWard(Number(wardID));
+    return await this.usersService.getUsersByWard(parseInt(wardID, 10));
   }
 
   @Post('/register')

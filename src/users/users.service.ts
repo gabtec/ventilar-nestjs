@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { parse } from 'path';
 import { CryptoService } from 'src/auth/crypto.service';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dtos/register-user.dto';
@@ -28,6 +29,37 @@ export class UsersService {
     });
   }
 
+  async getUserByMec(mec: number) {
+    const user = await this.usersRepository.findOne({
+      // return await this.usersRepository.findOne({
+      // relations: { workplace: true },
+      relations: ['workplace'],
+      where: {
+        mec: mec,
+      },
+    });
+
+    // return {
+    //   id: user.id,
+    //   name: user.name,
+    //   role: user.role,
+    //   workplace: user.workplace.name,
+    // };
+
+    return JSON.stringify(user);
+  }
+
+  async getUserById(id: number) {
+    const user = await this.usersRepository.findOne({
+      relations: ['workplace'],
+      where: {
+        id,
+      },
+    });
+
+    return this.parseUser(JSON.stringify(user));
+  }
+
   async register(userDto: RegisterUserDto) {
     const usersCount = await this.usersRepository.count();
     console.log(usersCount);
@@ -48,5 +80,16 @@ export class UsersService {
     console.log(admin);
 
     return this.usersRepository.save(admin);
+  }
+
+  parseUser(userJson: string) {
+    const user = JSON.parse(userJson);
+    return {
+      id: user.id,
+      mec: user.mec,
+      name: user.name,
+      role: user.role,
+      workplace: user.workplace.name,
+    };
   }
 }
