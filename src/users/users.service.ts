@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { parse } from 'path';
 import { CryptoService } from 'src/auth/crypto.service';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dtos/register-user.dto';

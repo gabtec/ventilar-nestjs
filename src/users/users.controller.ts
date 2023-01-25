@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { UsersService } from './users.service';
 
@@ -22,11 +30,13 @@ export class UsersController {
   }
 
   @Get('/by_ward/:wardID')
+  @HttpCode(HttpStatus.OK)
   async getAllByWard(@Param('wardID') wardID: string) {
     return await this.usersService.getUsersByWard(parseInt(wardID, 10));
   }
 
   @Post('/register')
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerUserDto: RegisterUserDto) {
     return await this.usersService.register(registerUserDto);
   }

@@ -1,10 +1,10 @@
-import { IsString, Length, Min } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 
 export class RegisterUserDto {
   @IsString()
   readonly name: string;
 
   @IsString()
-  @Length(4)
+  @MinLength(4)
   readonly password: string;
 }

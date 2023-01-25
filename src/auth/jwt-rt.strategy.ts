@@ -6,7 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtRtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     @Inject(UsersService) private readonly usersService: UsersService,
     @Inject(ConfigService) private readonly configService: ConfigService,
