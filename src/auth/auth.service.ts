@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { CryptoService } from './crypto.service';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 import { JwtPayload } from './jwt/jwt-payload.interface';
 
@@ -55,5 +56,9 @@ export class AuthService {
   async me(id: number) {
     console.log('me' + id);
     return this.usersService.getUserById(id);
+  }
+
+  async changePassword(userID: number, changePasswDto: ChangePasswordDto) {
+    return await this.usersService.changePassword(userID, changePasswDto);
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/auth/crypto.service';
+import { ChangePasswordDto } from 'src/auth/dtos/change-password.dto';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -94,6 +95,18 @@ export class UsersService {
       console.error(error);
       throw new Error('Could NOT create the user!');
     }
+  }
+
+  async changePassword(userId: number, changePasswDto: ChangePasswordDto) {
+    if (changePasswDto.password !== changePasswDto.password_confirm) {
+      throw new BadRequestException('Passwords do NOT match!');
+    }
+
+    const hash = await this.cryptoService.hashPassword(changePasswDto.password);
+
+    return await this.usersRepository.update(userId, {
+      password_hash: hash,
+    });
   }
 
   async register(userDto: RegisterUserDto) {
