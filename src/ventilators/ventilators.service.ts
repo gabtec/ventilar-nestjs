@@ -27,6 +27,18 @@ export class VentilatorsService {
     // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
   }
 
+  async getVentilatorsByPark(parkId: number) {
+    const vents = await this.ventsRepo.find({
+      relations: ['park'],
+      where: {
+        parked_at: parkId,
+      },
+    });
+
+    return vents;
+    // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
+  }
+
   async create(ventilatorDto: CreateVentilatorDto) {
     // const park = await this.wardsRepo.findOneBy({
     //   id: ventilatorDto.parked_at,
