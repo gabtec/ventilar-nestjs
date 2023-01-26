@@ -1,9 +1,11 @@
+import { Order } from 'src/orders/entities/order.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,6 +39,10 @@ export class User {
   @JoinColumn({ name: 'workplace_id' })
   // workplace: number;
   workplace: Ward;
+
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @ManyToMany((type) => Order, (order) => order.user)
+  // orders: Order[];
 
   @CreateDateColumn()
   created_at: string;

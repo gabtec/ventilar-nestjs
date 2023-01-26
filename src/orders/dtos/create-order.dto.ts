@@ -1,7 +1,9 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
+  @IsOptional()
   @IsString()
+  @IsIn(['PENDING', 'DISPATCHED', 'CLOSED'])
   status: 'PENDING' | 'DISPATCHED' | 'CLOSED';
 
   @IsString()
@@ -17,10 +19,10 @@ export class CreateOrderDto {
   to_id: number; // the ward receiving
 
   @IsString()
-  requested_by: number; // userID that places the order
+  requested_by: string; // user info that places the order
 
-  @IsString()
-  dispatched_by: number; // userID that delivers the order
+  // @IsString()
+  // dispatched_by: string; // because the order was not yet dispatched, this is null
 
   @IsNumber()
   ventilator_id: number;

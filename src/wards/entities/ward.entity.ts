@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,7 +29,7 @@ export class Ward {
   ventilators: Ventilator[];
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToMany((type) => Order, (order) => order.from_srv)
+  @ManyToMany((type) => Order, (order) => order.ward)
   orders: Order[];
 
   @CreateDateColumn()
