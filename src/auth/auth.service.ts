@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   async me(id: number) {
-    console.log(id);
+    console.log('me' + id);
     return this.usersService.getUserById(id);
   }
 }

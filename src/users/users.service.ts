@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/auth/crypto.service';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
+import { CreateUserDto } from './dtos/create-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
 
@@ -17,50 +23,77 @@ export class UsersService {
   ) {}
 
   async getAll() {
-    return await this.usersRepository.find();
-  }
+    const users = await this.usersRepository.find();
 
-  async getUsersByWard(id: number) {
-    console.log('Service ID: ' + id);
-    return await this.usersRepository.find({
-      // relations: { workplace: true },
-      relations: ['workplace'],
-      where: {
-        // workplaceId: id,
-        ward_id: id,
-      },
-    });
-  }
-
-  async getUserByMec(mec: number) {
-    const user = await this.usersRepository.findOne({
-      // return await this.usersRepository.findOne({
-      // relations: { workplace: true },
-      relations: ['workplace'],
-      where: {
-        mec: mec,
-      },
-    });
-
-    // return {
-    //   id: user.id,
-    //   name: user.name,
-    //   role: user.role,
-    //   workplace: user.workplace.name,
-    // };
-
-    return JSON.stringify(user);
+    return users.map((user) => this.parseUser(JSON.stringify(user)));
   }
 
   async getUserById(id: number) {
-    const user = await this.usersRepository.findOne({
-      relations: ['workplace'],
-      where: {
-        id,
-      },
+    const user = await this.usersRepository.findOneBy({
+      id,
     });
 
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     return this.parseUser(JSON.stringify(user));
+  }
+
+  async getUserByMec(mec: number) {
+    const user = await this.usersRepository.findOneBy({
+      mec: mec,
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    // must return with passwordHash
+    return JSON.stringify(user);
+  }
+
+  async getUsersByWard(id: number) {
+    const users = await this.usersRepository.find({
+      where: {
+        workplace_id: id,
+      },
+    });
+    return users.map((user) => this.parseUser(JSON.stringify(user)));
+  }
+
+  async create(userDto: CreateUserDto) {
+    if (userDto.password !== userDto.password_confirm) {
+      throw new BadRequestException('Passwords do NOT match!');
+    }
+
+    const hash = await this.cryptoService.hashPassword(userDto.password);
+
+    // Must pre-exist the ward with id=1
+    const user = this.usersRepository.create({
+      name: userDto.name,
+      mec: userDto.mec,
+      role: userDto.role,
+      workplace_id: userDto.workplace_id,
+      // workplace: await this.wardsRepository.findOneBy({
+      //   id: userDto.workplace_id,
+      // }),
+      password_hash: hash,
+    });
+
+    try {
+      const newUser = await this.usersRepository.save(user);
+      // NOTE: it won't include ward object inside newUser
+
+      return this.parseUser(JSON.stringify(newUser));
+    } catch (error) {
+      if (error.message.includes('violates unique constraint')) {
+        throw new ConflictException(error.message);
+      }
+      console.error(error.message);
+      console.error(error);
+      throw new Error('Could NOT create the user!');
+    }
   }
 
   async register(userDto: RegisterUserDto) {
@@ -70,19 +103,29 @@ export class UsersService {
       throw new NotFoundException('Route Not Found!');
     }
 
-    const hash = await this.cryptoService.hashPassword(userDto.password);
+    // const hash = await this.cryptoService.hashPassword(userDto.password);
 
-    // Must pre-exist the ward with id=1
-    const admin = this.usersRepository.create({
+    // // Must pre-exist the ward with id=1
+    // const admin = this.usersRepository.create({
+    //   name: userDto.name,
+    //   mec: 9999,
+    //   role: 'admin',
+    //   // workplaceId: 1,
+    //   workplace_id: 1,
+    //   workplace: await this.wardsRepository.create({ id: 1 }),
+    //   password_hash: hash,
+    // });
+
+    // const user = this.usersRepository.save(admin);
+    // return this.parseUser(JSON.stringify(user));
+    return this.create({
       name: userDto.name,
       mec: 9999,
       role: 'admin',
-      // workplaceId: 1,
-      workplace: await this.wardsRepository.create({ id: 1 }),
-      password_hash: hash,
+      workplace_id: 1, // IT_Service
+      password: userDto.password,
+      password_confirm: userDto.password,
     });
-
-    return this.usersRepository.save(admin);
   }
 
   parseUser(userJson: string) {
@@ -92,7 +135,7 @@ export class UsersService {
       mec: user.mec,
       name: user.name,
       role: user.role,
-      workplace: user.workplace.name,
+      workplace: user.workplace?.name || user.workplace_id,
     };
   }
 }

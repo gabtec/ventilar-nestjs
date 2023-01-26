@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,14 +27,15 @@ export class User {
   @Column()
   password_hash: string;
 
-  // @Column()
-  // workplaceId: number;
   @Column()
-  ward_id: number;
+  workplace_id: number;
+  // @Column()
+  // ward_id: number;
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace
+  // @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
   @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
-  @JoinColumn({ name: 'ward_id' })
+  @JoinColumn({ name: 'workplace_id' })
   // workplace: number;
   workplace: Ward;
 

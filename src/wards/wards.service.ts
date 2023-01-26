@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateWardDto } from './dtos/create-ward.dto';
 import { Ward } from './entities/ward.entity';
 
 @Injectable()
@@ -18,5 +19,9 @@ export class WardsService {
       where: { id },
       relations: ['ventilators'],
     });
+  }
+
+  async create(createWardDto: CreateWardDto) {
+    return this.wardsRepository.save(createWardDto);
   }
 }

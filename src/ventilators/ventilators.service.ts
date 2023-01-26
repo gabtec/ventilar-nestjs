@@ -27,5 +27,6 @@ export class VentilatorsService {
     const vent = await this.ventsRepo.create({ ...ventilatorDto, park });
 
     return await this.ventsRepo.save(vent);
+    // return await this.ventsRepo.save(ventilatorDto);
   }
 }

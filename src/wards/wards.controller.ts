@@ -1,5 +1,6 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateWardDto } from './dtos/create-ward.dto';
 import { WardsService } from './wards.service';
 
 @UseGuards(AuthGuard())
@@ -17,5 +18,10 @@ export class WardsController {
     return await this.wardsService.getAllVentilatorsInAPark(
       parseInt(parkID, 10),
     );
+  }
+
+  @Post('/')
+  async createWard(@Body() createWardDto: CreateWardDto) {
+    return this.wardsService.create(createWardDto);
   }
 }

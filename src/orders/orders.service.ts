@@ -11,8 +11,12 @@ export class OrdersService {
 
   async getOrdersByWard(id: number) {
     return this.ordersRepo.find({
-      // relations: ['park'],
+      relations: ['ventilator', 'from_srv', 'to_park'],
       where: { from_id: id },
     });
   }
+
+  // async create(createOrderDto: CreateOrderDto) {
+  //   return this.ordersRepo.save();
+  // }
 }

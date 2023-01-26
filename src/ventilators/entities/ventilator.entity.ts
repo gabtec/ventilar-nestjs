@@ -1,3 +1,4 @@
+import { Order } from 'src/orders/entities/order.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
   Column,
@@ -27,16 +28,22 @@ export class Ventilator {
   @Column('varchar', { length: 4 })
   category: 'VI' | 'VNI';
 
-  @Column()
+  @Column({ unique: false })
   parked_at: number; // ward_id where it's placed
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToOne((type) => Ward, (park) => park.ventilators)
+  @OneToOne((type) => Ward, (park) => park.ventilators, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'parked_at' })
   park: Ward;
 
   // @Column()
   // status: string;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @OneToMany((type) => Order, (order) => order.ventilator_id)
+  orders: Order[];
 
   @CreateDateColumn()
   created_at: string;

@@ -27,6 +27,7 @@ export class Ward {
   @OneToMany(() => Ventilator, (vent) => vent.park)
   ventilators: Ventilator[];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @OneToMany((type) => Order, (order) => order.from_srv)
   orders: Order[];
 
