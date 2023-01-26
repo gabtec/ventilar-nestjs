@@ -5,8 +5,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,7 +22,7 @@ export class Ventilator {
   @Column()
   model: string;
 
-  @Column()
+  @Column({ unique: true })
   serial: string;
 
   @Column('varchar', { length: 4 })
@@ -32,7 +32,7 @@ export class Ventilator {
   parked_at: number; // ward_id where it's placed
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToOne((type) => Ward, (park) => park.ventilators, {
+  @ManyToOne((type) => Ward, (park) => park.ventilators, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'parked_at' })

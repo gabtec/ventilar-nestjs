@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
@@ -15,18 +19,28 @@ export class VentilatorsService {
   ) {}
 
   async getVentilatorById(id: number) {
-    return await this.ventsRepo.findOneBy({ id });
+    const vent = await this.ventsRepo.findOneBy({ id });
+    if (!vent) {
+      throw new NotFoundException();
+    }
+    return vent;
     // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
   }
 
   async create(ventilatorDto: CreateVentilatorDto) {
-    const park = await this.wardsRepo.findOneBy({
-      id: ventilatorDto.parked_at,
-    });
+    // const park = await this.wardsRepo.findOneBy({
+    //   id: ventilatorDto.parked_at,
+    // });
 
-    const vent = await this.ventsRepo.create({ ...ventilatorDto, park });
+    // const vent = await this.ventsRepo.create(ventilatorDto);
 
-    return await this.ventsRepo.save(vent);
-    // return await this.ventsRepo.save(ventilatorDto);
+    try {
+      return await this.ventsRepo.save(ventilatorDto);
+    } catch (error) {
+      if (error.message.includes('violates unique constraint')) {
+        throw new ConflictException('Ventilator serial number must be unique!'); // can show this msg because is unique "unique" field
+      }
+      throw error;
+    }
   }
 }
