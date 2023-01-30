@@ -26,7 +26,7 @@ export class AuthService {
       const user = JSON.parse(data);
       if (!user) throw new BadRequestException('Invalid credentials!');
 
-      const isAMatch = this.cryptoService.comparePassword(
+      const isAMatch = await this.cryptoService.comparePassword(
         password,
         user.password_hash,
       );
@@ -44,6 +44,7 @@ export class AuthService {
           name: user.name,
           role: user.role,
           workplace: user.workplace.name,
+          workplace_id: user.workplace.id,
         },
         accessToken,
         refreshToken: 'todo',

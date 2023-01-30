@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
@@ -10,6 +19,7 @@ import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post('/login')
   async login(@Body() credentialsDto: LoginCredentialsDto) {
     return this.authService.login(credentialsDto);
