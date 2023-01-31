@@ -23,11 +23,22 @@ export class VentilatorsController {
   }
 
   @Get('/')
-  async getVentilators(@Query('park') parkId: string) {
-    if (!parkId) {
-      throw new BadRequestException('Could not understand query!');
+  async getVentilators(
+    @Query() query: { parkId?: string; status?: string; cat?: 'VI' | 'VNI' },
+  ) {
+    if (query.parkId) {
+      return await this.ventsService.getVentilatorsByPark(
+        parseInt(query.parkId, 10),
+      );
     }
-    return await this.ventsService.getVentilatorsByPark(parseInt(parkId, 10));
+    if (query.cat && query.status) {
+      return await this.ventsService.getVentilatorsByStatus(
+        query.cat,
+        query.status,
+      );
+    }
+
+    throw new BadRequestException('Could not understand query!');
   }
 
   @Post('/')

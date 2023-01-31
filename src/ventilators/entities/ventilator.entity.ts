@@ -28,6 +28,9 @@ export class Ventilator {
   @Column('varchar', { length: 4 })
   category: 'VI' | 'VNI';
 
+  @Column({ default: true })
+  is_available: boolean;
+
   @Column({ unique: false })
   parked_at: number; // ward_id where it's placed
 
