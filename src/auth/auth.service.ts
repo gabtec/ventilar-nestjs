@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { CryptoService } from './crypto.service';
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(credentials: LoginCredentialsDto) {
@@ -35,7 +37,15 @@ export class AuthService {
 
       // create jwt content
       const jwtPayload: JwtPayload = { authUserId: user.id };
-      const accessToken: string = await this.jwtService.signAsync(jwtPayload);
+      // const accessToken: string = await this.jwtService.signAsync(jwtPayload);
+      const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get('JWT_TIME'),
+        expiresIn: this.configService.get('JWT_TIME'),
+      });
+      const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get('REFRESH_TOKEN_TIME'),
+        expiresIn: this.configService.get('REFRESH_TOKEN_TIME'),
+      });
 
       return {
         user: {
@@ -47,7 +57,7 @@ export class AuthService {
           workplace_id: user.workplace.id,
         },
         accessToken,
-        refreshToken: 'todo',
+        refreshToken,
       };
     } catch (error) {
       throw new BadRequestException('Invalid credentials!');
