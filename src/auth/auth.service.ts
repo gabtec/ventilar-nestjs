@@ -37,11 +37,11 @@ export class AuthService {
 
       // create jwt content
       const jwtPayload: JwtPayload = { authUserId: user.id };
-      // const accessToken: string = await this.jwtService.signAsync(jwtPayload);
-      const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.configService.get('JWT_TIME'),
-        expiresIn: this.configService.get('JWT_TIME'),
-      });
+      const accessToken: string = await this.jwtService.signAsync(jwtPayload);
+      // const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
+      //   secret: this.configService.get('JWT_TIME'),
+      //   expiresIn: this.configService.get('JWT_TIME'),
+      // });
       const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get('REFRESH_TOKEN_TIME'),
         expiresIn: this.configService.get('REFRESH_TOKEN_TIME'),
