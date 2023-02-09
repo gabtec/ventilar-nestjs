@@ -2,16 +2,17 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import { CryptoService } from './crypto.service';
+// import { CryptoService } from './crypto.service';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 import { JwtPayload } from './jwt/jwt-payload.interface';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly cryptoService: CryptoService,
+    // private readonly cryptoService: CryptoService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -28,10 +29,12 @@ export class AuthService {
       const user = JSON.parse(data);
       if (!user) throw new BadRequestException('Invalid credentials!');
 
-      const isAMatch = await this.cryptoService.comparePassword(
-        password,
-        user.password_hash,
-      );
+      // const isAMatch = await this.cryptoService.comparePassword(
+      //   password,
+      //   user.password_hash,
+      // );
+
+      const isAMatch = await bcrypt.compare(password, user.password_hash);
 
       if (!isAMatch) throw new BadRequestException('Invalid credentials!');
 

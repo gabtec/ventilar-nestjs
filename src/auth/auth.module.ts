@@ -5,12 +5,13 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { CryptoService } from './crypto.service';
+// import { CryptoService } from './crypto.service';
 import { JwtStrategy } from './jwt/jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule,
+    UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -22,10 +23,12 @@ import { JwtStrategy } from './jwt/jwt.strategy';
         };
       },
     }),
-    forwardRef(() => UsersModule), // this avoids circular dependencie problem
+    // forwardRef(() => UsersModule), // this avoids circular dependencie problem
   ],
   controllers: [AuthController],
-  providers: [AuthService, CryptoService, JwtStrategy],
-  exports: [CryptoService, JwtStrategy, PassportModule],
+  providers: [AuthService, JwtStrategy],
+  // providers: [AuthService, CryptoService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule],
+  // exports: [CryptoService, JwtStrategy, PassportModule],
 })
 export class AuthModule {}

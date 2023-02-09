@@ -5,13 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CryptoService } from 'src/auth/crypto.service';
+// import { CryptoService } from 'src/auth/crypto.service';
 import { ChangePasswordDto } from 'src/auth/dtos/change-password.dto';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,6 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     @InjectRepository(Ward)
     private readonly wardsRepository: Repository<Ward>,
-    private readonly cryptoService: CryptoService,
   ) {}
 
   async getAll() {
@@ -68,7 +68,9 @@ export class UsersService {
       throw new BadRequestException('Passwords do NOT match!');
     }
 
-    const hash = await this.cryptoService.hashPassword(userDto.password);
+    // const hash = await this.cryptoService.hashPassword(userDto.password);
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(userDto.password, salt);
 
     // Must pre-exist the ward with id=1
     const user = this.usersRepository.create({
@@ -102,7 +104,10 @@ export class UsersService {
       throw new BadRequestException('Passwords do NOT match!');
     }
 
-    const hash = await this.cryptoService.hashPassword(changePasswDto.password);
+    // const hash = await this.cryptoService.hashPassword(changePasswDto.password);
+
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(changePasswDto.password, salt);
 
     return await this.usersRepository.update(userId, {
       password_hash: hash,
