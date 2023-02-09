@@ -48,7 +48,8 @@ export class VentilatorsService {
       },
     });
 
-    return vents;
+    return groupAndCountByWard(vents);
+    // return vents;
     // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
   }
 
@@ -68,4 +69,41 @@ export class VentilatorsService {
       throw error;
     }
   }
+}
+
+function groupAndCountByWard(list) {
+  // console.log(list);
+  const group = {};
+
+  const loops = list.length;
+  let i = 0;
+  for (i = 0; i < loops; i++) {
+    const groupKey = list[i].park.name;
+
+    if (group[groupKey]) {
+      group[groupKey].count = group[groupKey].count + 1;
+    } else {
+      group[groupKey] = {
+        count: 1,
+        wardID: list[i].park.id,
+        ventCategory: list[i].category,
+      };
+    }
+  }
+
+  const wards = Object.keys(group);
+  const finalList = wards.map((ward) => {
+    return {
+      wardName: ward,
+      wardID: group[ward].wardID,
+      ventsAvailable: group[ward].count,
+      ventCategory: group[ward].ventCategory.toLowerCase(),
+    };
+  });
+
+  return finalList;
+  // return {
+  //   category: list[0].category,
+  //   wards: group,
+  // };
 }

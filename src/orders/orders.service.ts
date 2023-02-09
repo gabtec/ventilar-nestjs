@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
@@ -49,7 +50,14 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto) {
+    console.log(createOrderDto);
     try {
+      const isUnique = await this.checkRepetedOrders(
+        createOrderDto.ventilator_id,
+      );
+      if (!isUnique) {
+        throw new ConflictException('This ventilator has an active order.');
+      }
       const order = this.ordersRepo.save(createOrderDto);
       return order;
     } catch (error) {
@@ -82,5 +90,23 @@ export class OrdersService {
       console.log(error.message);
       throw new InternalServerErrorException();
     }
+  }
+
+  async checkRepetedOrders(ventID: number) {
+    if (ventID === 0) return true;
+    // if a vent as an open order (status != closed), new order must be rejected
+    const vent = this.ordersRepo.findOne({
+      where: {
+        ventilator_id: ventID,
+        status: Not('CLOSED'),
+      },
+    });
+
+    console.log(vent);
+    if (!vent) {
+      return true;
+    }
+
+    return false;
   }
 }

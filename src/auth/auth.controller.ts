@@ -9,12 +9,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { GetAuthUser } from './decorators/get-auth-user.decorator';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

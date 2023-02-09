@@ -1,4 +1,10 @@
-import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateOrderDto {
   @IsOptional()
@@ -7,6 +13,7 @@ export class CreateOrderDto {
   status: 'PENDING' | 'DISPATCHED' | 'CLOSED';
 
   @IsString()
+  @IsNotEmpty()
   patient_name: string;
 
   @IsNumber()
@@ -19,6 +26,7 @@ export class CreateOrderDto {
   to_id: number; // the ward receiving
 
   @IsString()
+  @IsNotEmpty()
   requested_by: string; // user info that places the order
 
   // @IsString()
