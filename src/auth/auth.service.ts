@@ -67,11 +67,6 @@ export class AuthService {
     }
   }
 
-  async me(id: number) {
-    console.log('me' + id);
-    return this.usersService.getUserById(id);
-  }
-
   async changePassword(userID: number, changePasswDto: ChangePasswordDto) {
     return await this.usersService.changePassword(userID, changePasswDto);
   }

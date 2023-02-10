@@ -30,7 +30,8 @@ export class AuthController {
   @UseGuards(AuthGuard())
   @Get('/me')
   async me(@GetAuthUser() user: User) {
-    return this.authService.me(user.id);
+    // return this.authService.me(user.id);
+    return user;
   }
 
   @UseGuards(AuthGuard())
