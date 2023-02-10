@@ -11,7 +11,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=vpark_db
+      - POSTGRES_DB=ventilar_db
   test-db:
     image: postgres:15.1-alpine
     container_name: vpark-pg-test
@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=vpark_db
+      - POSTGRES_DB=test_ventilar_db
 
 networks:
   default:
