@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -18,8 +18,12 @@ import { JwtStrategy } from './jwt/jwt.strategy';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {
-          secret: configService.get('JWT_SECRET'),
-          signOptions: { expiresIn: configService.get('JWT_TIME') },
+          secret: configService.get('tokens.accessToken.secret'),
+          signOptions: {
+            expiresIn: configService.get('tokens.accessToken.duration'),
+          },
+          // secret: configService.get('JWT_SECRET'),
+          // signOptions: { expiresIn: configService.get('JWT_DURATION') },
         };
       },
     }),

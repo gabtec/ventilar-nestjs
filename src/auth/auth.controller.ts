@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { GetAuthUser } from './decorators/get-auth-user.decorator';
@@ -21,6 +21,11 @@ import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Login success.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   async login(@Body() credentialsDto: LoginCredentialsDto) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
@@ -16,18 +16,18 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
-
   async login(credentials: LoginCredentialsDto) {
     const { username, password } = credentials;
 
     try {
       const mec = parseInt(username, 10);
 
-      if (isNaN(mec)) throw new BadRequestException('Invalid credentials!');
+      // if (isNaN(mec)) throw new BadRequestException('Invalid credentials!');
+      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!');
 
       const data = await this.usersService.getUserByMec(mec);
       const user = JSON.parse(data);
-      if (!user) throw new BadRequestException('Invalid credentials!');
+      if (!user) throw new UnauthorizedException('Invalid credentials!');
 
       // const isAMatch = await this.cryptoService.comparePassword(
       //   password,
@@ -36,7 +36,7 @@ export class AuthService {
 
       const isAMatch = await bcrypt.compare(password, user.password_hash);
 
-      if (!isAMatch) throw new BadRequestException('Invalid credentials!');
+      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
 
       // create jwt content
       const jwtPayload: JwtPayload = { authUserId: user.id };
@@ -46,8 +46,8 @@ export class AuthService {
       //   expiresIn: this.configService.get('JWT_TIME'),
       // });
       const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.configService.get('REFRESH_TOKEN_TIME'),
-        expiresIn: this.configService.get('REFRESH_TOKEN_TIME'),
+        secret: this.configService.get('tokens.refreshToken.secret'),
+        expiresIn: this.configService.get('tokens.refreshToken.duration'),
       });
 
       return {
@@ -63,7 +63,7 @@ export class AuthService {
         refreshToken,
       };
     } catch (error) {
-      throw new BadRequestException('Invalid credentials!');
+      throw new UnauthorizedException('Invalid credentials!');
     }
   }
 

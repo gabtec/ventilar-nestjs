@@ -16,11 +16,11 @@ import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
+  // @InjectRepository(Ward)
+  // private readonly wardsRepository: Repository<Ward>,
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    @InjectRepository(Ward)
-    private readonly wardsRepository: Repository<Ward>,
   ) {}
 
   async getAll() {
