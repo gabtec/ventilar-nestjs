@@ -1,6 +1,7 @@
 import {
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   Max,
@@ -20,7 +21,8 @@ export class CreateUserDto {
   readonly mec: number;
 
   @IsString()
-  readonly role: string;
+  @IsOptional()
+  readonly role?: string;
 
   @IsString()
   @MinLength(4)

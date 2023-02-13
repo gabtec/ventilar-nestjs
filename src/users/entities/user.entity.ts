@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,7 +21,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: 'consumer' })
   role: string;
 
   @Column()
@@ -35,8 +34,11 @@ export class User {
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace
   // @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
-  @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
-  @JoinColumn({ name: 'workplace_id' })
+  @ManyToOne(() => Ward, (ward) => ward.users, {
+    eager: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'workplace_id', referencedColumnName: 'id' })
   // workplace: number;
   workplace: Ward;
 
