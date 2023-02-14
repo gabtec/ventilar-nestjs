@@ -48,6 +48,17 @@ export class WardsController {
     return await this.wardsService.getAll();
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'The resources were successfully fetched.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Get('/:id') // ================================== GET /wards/:id
+  async getOneById(@Param('id') id: string) {
+    return await this.wardsService.getWardById(parseInt(id, 10));
+  }
+
   // ================= Handlers ===================GET
   @Get('/:id/ventilators')
   @ApiResponse({
