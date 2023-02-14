@@ -23,11 +23,11 @@ export class AuthService {
       const mec = parseInt(username, 10);
 
       // if (isNaN(mec)) throw new BadRequestException('Invalid credentials!');
-      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!');
+      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!-0');
 
       const data = await this.usersService.getUserByMec(mec);
       const user = JSON.parse(data);
-      if (!user) throw new UnauthorizedException('Invalid credentials!');
+      if (!user) throw new UnauthorizedException('Invalid credentials!-1');
 
       // const isAMatch = await this.cryptoService.comparePassword(
       //   password,
@@ -36,7 +36,7 @@ export class AuthService {
 
       const isAMatch = await bcrypt.compare(password, user.password_hash);
 
-      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
+      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!-2');
 
       // create jwt content
       const jwtPayload: JwtPayload = { authUserId: user.id };
@@ -56,14 +56,15 @@ export class AuthService {
           mec: user.mec,
           name: user.name,
           role: user.role,
-          workplace: user.workplace.name,
-          workplace_id: user.workplace.id,
+          workplace: user.workplace?.name || null,
+          workplace_id: user.workplace?.id || null,
         },
         accessToken,
         refreshToken,
       };
     } catch (error) {
-      throw new UnauthorizedException('Invalid credentials!');
+      console.log(error.message);
+      throw new UnauthorizedException('Invalid credentials!-4');
     }
   }
 

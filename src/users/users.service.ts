@@ -140,7 +140,7 @@ export class UsersService {
       name: userDto.name,
       mec: 9999,
       role: 'admin',
-      workplace_id: 1, // IT_Service
+      workplace_id: null, // IT_Service
       password: userDto.password,
       password_confirm: userDto.password,
     });

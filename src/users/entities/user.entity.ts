@@ -1,4 +1,3 @@
-import { Order } from 'src/orders/entities/order.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
   Column,
@@ -27,8 +26,8 @@ export class User {
   @Column()
   password_hash: string;
 
-  @Column()
-  workplace_id: number;
+  @Column({ nullable: true })
+  workplace_id: number | null;
   // @Column()
   // ward_id: number;
 

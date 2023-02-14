@@ -16,20 +16,25 @@ export class Ward {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column()
-  belongs_to: string;
+  institution: string;
 
-  @OneToMany(() => User, (user) => user.workplace)
+  @Column({ default: false })
+  is_park: boolean;
+
+  @OneToMany(() => User, (user) => user.workplace, { cascade: true })
   users: User[];
 
-  @OneToMany(() => Ventilator, (vent) => vent.park)
+  @OneToMany(() => Ventilator, (vent) => vent.park, { cascade: true })
   ventilators: Ventilator[];
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToMany((type) => Order, (order) => order.ward)
+  @ManyToMany((type) => Order, (order) => order.ward, {
+    onDelete: 'SET NULL',
+  })
   orders: Order[];
 
   @CreateDateColumn()
