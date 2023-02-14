@@ -31,26 +31,22 @@ export class Ventilator {
   @Column({ default: true })
   is_available: boolean;
 
-  @Column({ unique: false })
-  parked_at: number; // ward_id where it's placed
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToOne((type) => Ward, (park) => park.ventilators, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn({ name: 'parked_at' })
-  park: Ward;
-
-  // @Column()
-  // status: string;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @OneToMany((type) => Order, (order) => order.ventilator_id)
-  orders: Order[];
+  @Column({ unique: false, nullable: true })
+  parked_at: number | null; // ward_id where it's placed
 
   @CreateDateColumn()
   created_at: string;
 
   @UpdateDateColumn()
   updated_at: string;
+
+  // --- relations
+  // @OneToMany(() => Order, (order) => order.ventilator_id, { cascade: true })
+  // orders: Order[];
+
+  // @ManyToOne(() => Ward, (park) => park.ventilators, {
+  //   onDelete: 'SET NULL',
+  // })
+  // @JoinColumn({ name: 'parked_at' })
+  // park: Ward;
 }

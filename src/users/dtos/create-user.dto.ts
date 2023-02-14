@@ -22,7 +22,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  readonly role?: string;
+  readonly role?: string | null | undefined;
 
   @IsString()
   @MinLength(4)
@@ -36,5 +36,6 @@ export class CreateUserDto {
 
   @IsNumber()
   @IsPositive()
-  readonly workplace_id: number;
+  @IsOptional()
+  readonly workplace_id?: number | null | undefined;
 }

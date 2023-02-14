@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { User } from 'src/users/entities/user.entity';
 import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
@@ -8,9 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
-  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,18 +35,21 @@ export class Order {
   @Column()
   to_id: number; // the ward receiving
 
-  @OneToMany(() => Ward, (ward) => ward.orders)
-  @JoinColumn([
-    { name: 'from_id', referencedColumnName: 'id' },
-    { name: 'to_id', referencedColumnName: 'id' },
-  ])
-  ward: Ward;
+  // @OneToMany(() => Ward, (ward) => ward.orders, { cascade: true })
+  // @JoinColumn([
+  //   { name: 'from_id', referencedColumnName: 'id' },
+  //   { name: 'to_id', referencedColumnName: 'id' },
+  // ])
+  // ward: Ward;
 
   @Column()
   ventilator_id: number;
 
-  @ManyToMany((type) => Ventilator, (vent) => vent.id)
+  @ManyToMany((type) => Ventilator, (vent) => vent.id, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'ventilator_id' })
+  // @Check(`"ventilator.status" <> 'active' AND "order.status" = 'PENDING'`)
   ventilator: Ventilator;
 
   @Column('text')
@@ -62,7 +62,7 @@ export class Order {
   updated_at: string;
 
   /*  This is kind of info logs.
-      The recomendeation, for now, is:
+      The recomendation, for now, is:
       (user.mec) user.name
       (3001) John Doe
    */

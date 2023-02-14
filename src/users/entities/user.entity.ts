@@ -21,7 +21,7 @@ export class User {
   name: string;
 
   @Column({ default: 'consumer' })
-  role: string;
+  role: string | null | undefined;
 
   @Column()
   password_hash: string;

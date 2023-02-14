@@ -1,70 +1,94 @@
 import * as request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
 
-const app = 'http://localhost:3002/api';
+import { AuthGuard } from '@nestjs/passport';
+import { AppModule } from 'src/app.module';
+import { AuthService } from 'src/auth/auth.service';
+import { UsersService } from 'src/users/users.service';
+import { createUserStub } from './stubs/create-user.stub';
 
-beforeAll(() => {
-  // place a test user on DB
-});
+describe('Auth Endpoints (e2e)', () => {
+  let app: INestApplication;
+  let api: any;
+  let authService, usersService;
 
-afterAll(() => {
-  // remove the test user from DB
-});
+  beforeAll(async () => {
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+      .overrideGuard(AuthGuard())
+      .useValue({ canActivate: () => true })
+      .compile();
 
-describe('Auth', () => {
-  describe('POST /auth/login', () => {
-    it(`should return 401|Unauthorized if username not existent`, () => {
-      return request(app)
-        .post('/auth/login')
-        .send({
-          username: 'userNotOnDB',
-          password: 'fake',
-        })
+    app = moduleRef.createNestApplication();
+
+    usersService = moduleRef.get(UsersService);
+
+    app.setGlobalPrefix('api');
+    await app.init();
+
+    api = app.getHttpServer();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('POST /login', () => {
+    let user;
+
+    beforeAll(async () => {
+      user = await usersService.create(createUserStub());
+    });
+
+    afterAll(async () => {
+      // delete user
+      await usersService.clearTable(user.id, 'test'); // id + NODE_ENV
+    });
+
+    it('should fail with 404 if username not on db', () => {
+      return request(api)
+        .post('/api/auth/login')
+        .send({ username: 0, password: 'fake' })
+        .expect(404);
+    });
+
+    it('should fail with 401 if username not a number ', () => {
+      return request(api)
+        .post('/api/auth/login')
+        .send({ username: 'someuser', password: 'fake' })
         .expect(401);
     });
 
-    it(`should return 401|Unauthorized if username can not be converted to integer number, since user.mec is a number`, () => {
-      return request(app)
-        .post('/auth/login')
-        .send({
-          username: 'notAnumber',
-          password: 'fake',
-        })
+    it('should fail with 401 if username on db, but wrong password', () => {
+      return request(api)
+        .post('/api/auth/login')
+        .send({ username: user.mec, password: 'fake' })
         .expect(401);
     });
 
-    it(`should return 401|Unauthorized if username is valid, but password not`, () => {
-      return request(app)
-        .post('/auth/login')
-        .send({
-          username: '3428',
-          password: 'fake',
-        })
-        .expect(401);
-    });
-
-    it(`should return 200|Ok if username is valid, and password also valid. 
-      The response must be an object with 3 properties: 
-      user: { id, mec, name, role, workplace,, workplace_id}, 
-      accessToken: jwt, 
-      refreshToken: jwt`, () => {
-      return request(app)
-        .post('/auth/login')
-        .send({
-          username: '3428',
-          password: 'gabriel',
-        })
-        .expect('Content-Type', /json/)
+    it('should login and return { user: {id, name, role, workplace }, accessToken, refreshToken }. Password omitted.', () => {
+      return request(api)
+        .post('/api/auth/login')
+        .send({ username: user.mec, password: 'test' })
         .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveProperty('accessToken');
-          expect(body).toHaveProperty('refreshToken');
-          expect(body).toHaveProperty('user');
-          expect(body.user).toHaveProperty('id');
-          expect(body.user).toHaveProperty('mec');
-          expect(body.user).toHaveProperty('name');
-          expect(body.user).toHaveProperty('role');
-          expect(body.user).toHaveProperty('workplace');
-          expect(body.user).toHaveProperty('workplace_id');
+        .expect((resp) => {
+          expect(resp.body).toHaveProperty('accessToken');
+          expect(resp.body).toHaveProperty('refreshToken');
+          expect(resp.body).toHaveProperty('user');
+          expect(resp.body.user).not.toHaveProperty('password_hash');
+          expect(resp.body.user).toHaveProperty('id');
+          expect(resp.body.user).toHaveProperty('name');
+          expect(resp.body.user).toHaveProperty('role');
+          expect(resp.body.user).toHaveProperty('workplace');
+          expect(resp.body.user).toHaveProperty('workplace_id');
+
+          expect(resp.body.user.id).toBe(user.id);
+          expect(resp.body.user.name).toBe(user.name);
+          expect(resp.body.user.role).toBe(user.role);
+          expect(resp.body.user.workspace).toBeFalsy();
+          expect(resp.body.user.workspace_id).toBeFalsy();
         });
     });
   });

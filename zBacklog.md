@@ -11,3 +11,5 @@ https://github.com/lujakob/nestjs-realworld-example-app/blob/master/src/user/use
 
 [] exemplo com testes e openApi spec
 https://github.com/pvarentsov/typescript-clean-architecture/blob/master/src/application/api/http-rest/controller/MediaController.ts
+
+[] put usersParser in a separate file as a service provider

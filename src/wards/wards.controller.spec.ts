@@ -55,7 +55,7 @@ describe('WardsController', () => {
 
   describe('createWard', () => {
     it('should call service.create with a dto', async () => {
-      const mockDto = { name: 'fake ward', belongs_to: 'me' };
+      const mockDto = { name: 'fake ward', institution: 'me' };
       const spyC = jest.spyOn(mockWardService, 'create');
 
       await wardsController.createWard(mockDto);
@@ -68,7 +68,7 @@ describe('WardsController', () => {
       const result = {
         id: 9,
         name: 'ward brand new',
-        belongs_to: 'ME',
+        institution: 'ME',
         created_at: '2023-01-20T10:15:30.000Z',
         updated_at: '2023-01-20T10:15:30.000Z',
       };
@@ -77,12 +77,12 @@ describe('WardsController', () => {
 
       const resp = await wardsController.createWard({
         name: 'fake ward',
-        belongs_to: 'me',
+        institution: 'me',
       });
 
       expect(resp).toHaveProperty('id');
       expect(resp).toHaveProperty('name');
-      expect(resp).toHaveProperty('belongs_to');
+      expect(resp).toHaveProperty('institution');
       expect(resp).toHaveProperty('created_at');
       expect(resp).toHaveProperty('updated_at');
       expect(Object.keys(resp)).toHaveLength(5);

@@ -19,15 +19,20 @@ export class AuthService {
   async login(credentials: LoginCredentialsDto) {
     const { username, password } = credentials;
 
+    let mec;
     try {
-      const mec = parseInt(username, 10);
+      mec = parseInt(username, 10);
+      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!');
+    } catch (error) {
+      console.log('Username must be a number: mec');
+      // throw new BadRequestException('Invalid credentials!');
+      throw new UnauthorizedException('Invalid credentials!');
+    }
 
-      // if (isNaN(mec)) throw new BadRequestException('Invalid credentials!');
-      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!-0');
-
+    try {
       const data = await this.usersService.getUserByMec(mec);
       const user = JSON.parse(data);
-      if (!user) throw new UnauthorizedException('Invalid credentials!-1');
+      if (!user) throw new UnauthorizedException('Invalid credentials!');
 
       // const isAMatch = await this.cryptoService.comparePassword(
       //   password,
@@ -36,7 +41,7 @@ export class AuthService {
 
       const isAMatch = await bcrypt.compare(password, user.password_hash);
 
-      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!-2');
+      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
 
       // create jwt content
       const jwtPayload: JwtPayload = { authUserId: user.id };
@@ -63,8 +68,8 @@ export class AuthService {
         refreshToken,
       };
     } catch (error) {
-      console.log(error.message);
-      throw new UnauthorizedException('Invalid credentials!-4');
+      // console.log(error.message);
+      throw error;
     }
   }
 

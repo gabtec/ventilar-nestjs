@@ -3,7 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import configuration from 'src/config/configuration';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
 import { CreateVentilatorDto } from './dtos/create-ventilator.dto';
@@ -12,6 +14,7 @@ import { Ventilator } from './entities/ventilator.entity';
 @Injectable()
 export class VentilatorsService {
   constructor(
+    private configService: ConfigService,
     @InjectRepository(Ventilator)
     private readonly ventsRepo: Repository<Ventilator>,
     @InjectRepository(Ward)
@@ -68,6 +71,17 @@ export class VentilatorsService {
       }
       throw error;
     }
+  }
+
+  async clearTable() {
+    const runningMode = this.configService.get('mode');
+    console.log(runningMode);
+
+    if (runningMode !== 'test') {
+      return;
+    }
+
+    return this.ventsRepo.clear();
   }
 }
 
