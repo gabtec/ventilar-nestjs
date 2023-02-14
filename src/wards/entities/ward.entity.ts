@@ -1,11 +1,8 @@
-import { Order } from 'src/orders/entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -25,21 +22,22 @@ export class Ward {
   @Column({ default: false })
   is_park: boolean;
 
-  @OneToMany(() => User, (user) => user.workplace, { cascade: true })
-  users: User[];
-
-  @OneToMany(() => Ventilator, (vent) => vent.park, { cascade: true })
-  ventilators: Ventilator[];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToMany((type) => Order, (order) => order.ward, {
-    onDelete: 'SET NULL',
-  })
-  orders: Order[];
-
   @CreateDateColumn()
   created_at: string;
 
   @UpdateDateColumn()
   updated_at: string;
+
+  // ------ Relations -------------
+  @OneToMany(() => User, (user) => user.workplace)
+  users: User[];
+
+  // @OneToMany(() => Ventilator, (vent) => vent.park, { cascade: true })
+  // ventilators: Ventilator[];
+
+  // @ManyToMany(() => Order, (order) => order.ward, {
+  //   onDelete: 'SET NULL',
+  //   cascade: true,
+  // })
+  // orders: Order[];
 }

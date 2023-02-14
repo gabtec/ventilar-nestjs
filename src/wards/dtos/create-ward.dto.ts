@@ -11,5 +11,5 @@ export class CreateWardDto {
   @ApiProperty()
   @IsString()
   @MaxLength(8)
-  readonly belongs_to: string;
+  readonly institution: string;
 }
