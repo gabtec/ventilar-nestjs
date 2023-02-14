@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
 import { VentilatorsModule } from './ventilators/ventilators.module';
 import configuration from './config/configuration';
+// import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import configuration from './config/configuration';
     //   autoLoadEntities: true,
     //   synchronize: true, // TODO: disable in production
     // }),
+    // DatabaseModule,
     WardsModule,
     UsersModule,
     AuthModule,

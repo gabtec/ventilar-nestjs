@@ -1,6 +1,7 @@
 export default function () {
   return {
     port: parseInt(process.env.API_PORT, 10) || 3000,
+    mode: process.env.NODE_ENV,
     database: {
       driver: process.env.DB_DRIVER || 'postgres',
       host: process.env.DB_HOST,
