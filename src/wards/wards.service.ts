@@ -1,27 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CreateWardDto } from './dtos/create-ward.dto';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
 import { Ward } from './entities/ward.entity';
+import { WardsRepository } from './wards.repository';
 
 @Injectable()
 export class WardsService {
-  constructor(
-    @InjectRepository(Ward) private readonly wardsRepository: Repository<Ward>,
-  ) {}
+  constructor(private readonly wardsRepo: WardsRepository) {}
 
-  async getAll() {
-    return await this.wardsRepository.find();
+  async getWardById(id: number): Promise<Ward> {
+    return await this.wardsRepo.findOneById(id);
+  }
+
+  async getAll(limit?: number, offset?: number): Promise<Ward[]> {
+    return await this.wardsRepo.findAll(limit, offset);
+  }
+
+  async create(createWardDto: CreateWardDto): Promise<Ward> {
+    return this.wardsRepo.create(createWardDto);
   }
 
   async getAllVentilatorsInAPark(id: number) {
-    return await this.wardsRepository.find({
-      where: { id },
-      relations: ['ventilators'],
-    });
+    return await this.wardsRepo.findAllVentsInThisWard(id);
   }
 
-  async create(createWardDto: CreateWardDto) {
-    return this.wardsRepository.save(createWardDto);
-  }
+  // constructor(
+  //   @InjectRepository(Ward) private readonly wardsRepository: Repository<Ward>,
+  // ) {}
+
+  // async getAll() {
+  //   return await this.wardsRepository.find();
+  // }
+
+  // async getAllVentilatorsInAPark(id: number) {
+  //   return await this.wardsRepository.find({
+  //     where: { id },
+  //     relations: ['ventilators'],
+  //   });
+  // }
+
+  // async create(createWardDto: CreateWardDto) {
+  //   return this.wardsRepository.save(createWardDto);
+  // }
 }
