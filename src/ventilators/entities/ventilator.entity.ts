@@ -31,9 +31,6 @@ export class Ventilator {
   @Column({ default: true })
   is_available: boolean;
 
-  @Column({ unique: false, nullable: true })
-  parked_at: number | null; // ward_id where it's placed
-
   @CreateDateColumn()
   created_at: string;
 
@@ -41,12 +38,15 @@ export class Ventilator {
   updated_at: string;
 
   // --- relations
+  @Column({ unique: false, nullable: true })
+  parked_at: number | null; // ward_id where it's placed
+
+  @ManyToOne(() => Ward, (park) => park.ventilators, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'parked_at' })
+  park: Ward;
+
   // @OneToMany(() => Order, (order) => order.ventilator_id, { cascade: true })
   // orders: Order[];
-
-  // @ManyToOne(() => Ward, (park) => park.ventilators, {
-  //   onDelete: 'SET NULL',
-  // })
-  // @JoinColumn({ name: 'parked_at' })
-  // park: Ward;
 }

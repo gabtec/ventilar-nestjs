@@ -28,8 +28,6 @@ export class User {
 
   @Column({ nullable: true })
   workplace_id: number | null;
-  // @Column()
-  // ward_id: number;
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace
   // @ManyToOne(() => Ward, (ward) => ward.users, { eager: true })
@@ -38,7 +36,6 @@ export class User {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'workplace_id', referencedColumnName: 'id' })
-  // workplace: number;
   workplace: Ward;
 
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars

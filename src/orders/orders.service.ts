@@ -52,11 +52,13 @@ export class OrdersService {
   async create(createOrderDto: CreateOrderDto) {
     console.log(createOrderDto);
     try {
-      const isUnique = await this.checkRepetedOrders(
-        createOrderDto.ventilator_id,
-      );
-      if (!isUnique) {
-        throw new ConflictException('This ventilator has an active order.');
+      if (createOrderDto.ventilator_id) {
+        const isUnique = await this.checkRepetedOrders(
+          createOrderDto.ventilator_id,
+        );
+        if (!isUnique) {
+          throw new ConflictException('This ventilator has an active order.');
+        }
       }
       const order = this.ordersRepo.save(createOrderDto);
       return order;

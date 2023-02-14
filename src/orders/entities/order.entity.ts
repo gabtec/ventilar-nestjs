@@ -7,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -29,30 +30,38 @@ export class Order {
   @Column({ default: true })
   is_active: boolean;
 
-  @Column()
+  @Column({ unique: false })
   from_id: number; // the ward requiring
 
-  @Column()
+  @Column({ unique: false, nullable: true })
   to_id: number; // the ward receiving
 
-  // @OneToMany(() => Ward, (ward) => ward.orders, { cascade: true })
+  @ManyToOne(() => Ward, (ward) => ward.orders, { onDelete: 'SET NULL' })
   // @JoinColumn([
-  //   { name: 'from_id', referencedColumnName: 'id' },
-  //   { name: 'to_id', referencedColumnName: 'id' },
+  //   {
+  //     name: 'from_id',
+  //     referencedColumnName: 'id',
+  //   },
+  //   {
+  //     name: 'to_id',
+  //     referencedColumnName: 'id2',
+  //   },
   // ])
-  // ward: Ward;
+  ward: Ward;
 
-  @Column()
+  // MUST validate on create new order, if a requested ventilator_id is in another active Order
+  // then it can not be used on new Order, until that active order is et to closed
+  @Column({ unique: false, nullable: true })
   ventilator_id: number;
 
-  @ManyToMany((type) => Ventilator, (vent) => vent.id, {
+  @ManyToMany(() => Ventilator, (vent) => vent.id, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'ventilator_id' })
   // @Check(`"ventilator.status" <> 'active' AND "order.status" = 'PENDING'`)
   ventilator: Ventilator;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   obs: string;
 
   @CreateDateColumn()

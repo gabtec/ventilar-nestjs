@@ -22,7 +22,11 @@ export class VentilatorsService {
   ) {}
 
   async getVentilatorById(id: number) {
-    const vent = await this.ventsRepo.findOneBy({ id });
+    // const vent = await this.ventsRepo.findOneBy({ id });
+    const vent = await this.ventsRepo.findOne({
+      where: { id },
+      relations: ['park'],
+    });
     if (!vent) {
       throw new NotFoundException();
     }

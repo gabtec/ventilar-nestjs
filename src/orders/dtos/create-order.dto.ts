@@ -7,11 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsOptional()
-  @IsString()
-  @IsIn(['PENDING', 'DISPATCHED', 'CLOSED'])
-  status: 'PENDING' | 'DISPATCHED' | 'CLOSED';
-
   @IsString()
   @IsNotEmpty()
   patient_name: string;
@@ -29,14 +24,21 @@ export class CreateOrderDto {
   @IsNotEmpty()
   requested_by: string; // user info that places the order
 
-  // @IsString()
-  // dispatched_by: string; // because the order was not yet dispatched, this is null
-
   @IsNumber()
-  ventilator_id: number;
+  @IsOptional()
+  ventilator_id: number; // the ventilator_id may be selected from the dispatcher (in some cases, e.g. only one available, may be set on order created)
 
   @IsString()
+  @IsOptional()
   obs: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['PENDING', 'DISPATCHED', 'CLOSED'])
+  status: 'PENDING' | 'DISPATCHED' | 'CLOSED';
+
+  // @IsString()
+  // dispatched_by: string; // because the order was not yet dispatched, this is null
 
   // relations
   // ventilator: Ventilator;

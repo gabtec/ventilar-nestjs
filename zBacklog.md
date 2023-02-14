@@ -13,3 +13,5 @@ https://github.com/lujakob/nestjs-realworld-example-app/blob/master/src/user/use
 https://github.com/pvarentsov/typescript-clean-architecture/blob/master/src/application/api/http-rest/controller/MediaController.ts
 
 [] put usersParser in a separate file as a service provider
+
+[] on order, replace requested_by, dispatched_by string with a relation with t_users by user_id FK
