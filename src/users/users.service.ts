@@ -12,12 +12,14 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly configService: ConfigService,
   ) {}
 
   async getAll() {
@@ -118,34 +120,17 @@ export class UsersService {
   }
 
   async register(userDto: RegisterUserDto) {
-    const usersCount = await this.usersRepository.count();
-
-    if (usersCount > 0) {
+    if (!this.configService.get('allowUserSelfRegistration')) {
       throw new NotFoundException('Route Not Found!');
     }
 
-    // const hash = await this.cryptoService.hashPassword(userDto.password);
-
-    // // Must pre-exist the ward with id=1
-    // const admin = this.usersRepository.create({
-    //   name: userDto.name,
-    //   mec: 9999,
-    //   role: 'admin',
-    //   // workplaceId: 1,
-    //   workplace_id: 1,
-    //   workplace: await this.wardsRepository.create({ id: 1 }),
-    //   password_hash: hash,
-    // });
-
-    // const user = this.usersRepository.save(admin);
-    // return this.parseUser(JSON.stringify(user));
     return this.create({
       name: userDto.name,
-      mec: 9999,
-      role: 'admin',
-      workplace_id: null, // IT_Service
+      mec: userDto.mec || 9999,
+      role: userDto.role || 'admin',
       password: userDto.password,
-      password_confirm: userDto.password,
+      password_confirm: userDto.password || userDto.password,
+      workplace_id: null, // IT_Service
     });
   }
 
