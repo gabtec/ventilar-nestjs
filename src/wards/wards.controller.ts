@@ -6,10 +6,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AllowRoles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateWardDto } from './dtos/create-ward.dto';
 import { WardsService } from './wards.service';
 
@@ -33,6 +36,8 @@ export class WardsController {
     description: 'Conflict. Verify unique value fields',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @UseGuards(RolesGuard)
+  @AllowRoles('admin')
   async createWard(@Body() createWardDto: CreateWardDto) {
     return this.wardsService.create(createWardDto);
   }
