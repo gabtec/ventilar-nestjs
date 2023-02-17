@@ -27,9 +27,10 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const PORT = configService.get('port');
-  await app.listen(PORT, () => {
-    console.log(`Server listening on PORT: ${PORT}`);
-    console.log(`Server in: "${configService.get('mode')}" mode`);
+  await app.listen(PORT, async () => {
+    // console.log(`Server listening on PORT: ${PORT}`);
+    console.log(`Server listening at: ${await app.getUrl()}`);
+    console.log(`Server listening in: "${configService.get('mode')}" mode`);
   });
 }
 
