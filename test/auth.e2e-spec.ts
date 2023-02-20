@@ -75,6 +75,7 @@ describe('Auth Endpoints (e2e)', () => {
         .expect(200)
         .expect((resp) => {
           expect(resp.body).toHaveProperty('accessToken');
+          // OR expect(resp.body.accessToken).toBeDefined();
           expect(resp.body).toHaveProperty('refreshToken');
           expect(resp.body).toHaveProperty('user');
           expect(resp.body.user).not.toHaveProperty('password_hash');

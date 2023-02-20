@@ -37,7 +37,7 @@ export class Ventilator {
   @UpdateDateColumn()
   updated_at: string;
 
-  // --- relations
+  // --- relation with Ward
   @Column({ unique: false, nullable: true })
   parked_at: number | null; // ward_id where it's placed
 
@@ -47,6 +47,9 @@ export class Ventilator {
   @JoinColumn({ name: 'parked_at' })
   park: Ward;
 
-  // @OneToMany(() => Order, (order) => order.ventilator_id, { cascade: true })
-  // orders: Order[];
+  // --- relation with Ventilator
+  @OneToMany(() => Order, (order) => order.ventilator_id, {
+    nullable: true,
+  })
+  orders: Order[];
 }

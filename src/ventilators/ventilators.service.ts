@@ -46,11 +46,11 @@ export class VentilatorsService {
     // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
   }
 
-  async getVentilatorsByStatus(category: 'VNI' | 'VI', status: string) {
+  async getVentilatorsByStatus(category: 'VNI' | 'VI', areAvailable = true) {
     const vents = await this.ventsRepo.find({
       relations: ['park'],
       where: {
-        is_available: status === 'free' ? true : false,
+        is_available: areAvailable,
         category: category,
       },
     });
@@ -77,6 +77,9 @@ export class VentilatorsService {
     }
   }
 
+  async updateStatus(ventID: number, isAvailable = false) {
+    return this.ventsRepo.update(ventID, { is_available: isAvailable });
+  }
   async clearTable() {
     const runningMode = this.configService.get('mode');
     console.log(runningMode);

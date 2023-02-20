@@ -127,7 +127,7 @@ export class UsersService {
     return this.create({
       name: userDto.name,
       mec: userDto.mec || 9999,
-      role: userDto.role || 'admin',
+      role: userDto.role || 'consumer', // [admin, dispatcher, consumer]
       password: userDto.password,
       password_confirm: userDto.password || userDto.password,
       workplace_id: null, // IT_Service
@@ -154,6 +154,7 @@ export class UsersService {
       name: user.name,
       role: user.role,
       workplace: user.workplace?.name || user.workplace_id,
+      workplace_id: user.workplace_id,
     };
   }
 }

@@ -10,5 +10,6 @@ import { VentilatorsService } from './ventilators.service';
   imports: [TypeOrmModule.forFeature([Ventilator, Ward]), AuthModule],
   controllers: [VentilatorsController],
   providers: [VentilatorsService],
+  exports: [VentilatorsService],
 })
 export class VentilatorsModule {}

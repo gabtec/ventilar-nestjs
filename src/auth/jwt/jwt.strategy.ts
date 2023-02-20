@@ -26,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const { authUserId } = payload;
 
     const user = await this.usersService.getUserById(authUserId);
+
     if (!user) {
       throw new UnauthorizedException();
     }

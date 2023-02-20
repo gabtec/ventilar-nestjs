@@ -9,8 +9,8 @@ import {
 export class UpdateOrderDto {
   @IsOptional()
   @IsString()
-  @IsIn(['PENDING', 'DISPATCHED', 'CLOSED'])
-  status?: 'PENDING' | 'DISPATCHED' | 'CLOSED';
+  @IsIn(['PENDING', 'DISPATCHED', 'RETURNED', 'CLOSED'])
+  status?: 'PENDING' | 'DISPATCHED' | 'RETURNED' | 'CLOSED';
 
   @IsOptional()
   @IsString()
@@ -25,8 +25,8 @@ export class UpdateOrderDto {
   dispatched_by?: string; // user info that places the order e.g (3000) John Doe
 
   @IsOptional()
-  @IsNumber()
-  ventilator_id?: number;
+  @IsString()
+  ventilator_id?: string;
 
   @IsOptional()
   @IsString()
@@ -34,5 +34,5 @@ export class UpdateOrderDto {
 
   @IsOptional()
   @IsBoolean()
-  is_active?: boolean;
+  is_closed?: boolean;
 }

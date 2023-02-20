@@ -26,7 +26,7 @@ export class VentilatorsController {
 
   @Get('/')
   async getVentilators(
-    @Query() query: { parkId?: string; status?: string; cat?: 'VI' | 'VNI' },
+    @Query() query: { parkId?: string; status?: boolean; cat?: 'VI' | 'VNI' },
   ) {
     if (query.parkId) {
       return await this.ventsService.getVentilatorsByPark(

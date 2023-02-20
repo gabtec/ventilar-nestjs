@@ -13,9 +13,16 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
-  app.enableCors({
-    origin: '*',
-  });
+  app.enableCors();
+  // {
+  // origin: 'http://localhost:3000',
+  // methods: 'PUT, POST, PATCH, DELETE, GET, HEAD, OPTIONS',
+  // allowedHeaders:
+  //   'Origin, X-Request-With, Content-Type, Accept, Authorization, Referer, If-Match',
+  // credentials: true,
+  // optionsSuccessStatus: 200,
+  // preflightContinue: true,
+  // }
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()

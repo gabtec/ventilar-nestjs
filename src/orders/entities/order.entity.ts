@@ -1,4 +1,3 @@
-import { User } from 'src/users/entities/user.entity';
 import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
@@ -6,9 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -19,16 +16,19 @@ export class Order {
   id: number;
 
   @Column()
+  order_type: string; // what type of order it is. Maps to ventilator category
+
+  @Column()
   patient_name: string;
 
   @Column()
   patient_bed: number;
 
   @Column('varchar', { default: 'PENDING', length: 12 })
-  status: 'PENDING' | 'DISPATCHED' | 'CLOSED';
+  status: 'PENDING' | 'DISPATCHED' | 'RETURNED' | 'CLOSED';
 
-  @Column({ default: true })
-  is_active: boolean;
+  @Column({ default: false })
+  is_closed: boolean;
 
   @Column({ unique: false })
   from_id: number; // the ward requiring
@@ -54,32 +54,21 @@ export class Order {
   @Column({ unique: false, nullable: true })
   ventilator_id: number;
 
-  @ManyToMany(() => Ventilator, (vent) => vent.id, {
+  @ManyToOne(() => Ventilator, (vent) => vent.id, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'ventilator_id' })
   // @Check(`"ventilator.status" <> 'active' AND "order.status" = 'PENDING'`)
-  ventilator: Ventilator;
+  ventilator?: Ventilator;
 
   @Column('text', { nullable: true })
-  obs: string;
-
-  @CreateDateColumn()
-  created_at: string;
-
-  @UpdateDateColumn()
-  updated_at: string;
+  obs?: string;
 
   /*  This is kind of info logs.
       The recomendation, for now, is:
       (user.mec) user.name
       (3001) John Doe
    */
-  @Column()
-  requested_by: string; // user info that places the order
-
-  @Column({ nullable: true })
-  dispatched_by: string; // user info that delivers the order
 
   // @Column()
   // requested_by: number; // userID that places the order
@@ -93,4 +82,19 @@ export class Order {
   //   { name: 'dispatched_by', referencedColumnName: 'id' },
   // ])
   // user: User;
+
+  @Column()
+  created_by: string; // user info that places the order
+
+  @Column({ nullable: true })
+  dispatched_by: string; // user info that delivers the order
+
+  @Column()
+  updated_by: string; // user info that updates order, e.g. cancel it before dispatched
+
+  @CreateDateColumn()
+  created_at: string;
+
+  @UpdateDateColumn()
+  updated_at: string;
 }

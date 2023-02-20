@@ -6,11 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { GetAuthUser } from 'src/auth/decorators/get-auth-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { OrdersService } from './orders.service';
@@ -22,13 +25,13 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get('/:id')
-  async getById(@Param('id') id: string) {
+  async getOrderById(@Param('id') id: string) {
     return await this.ordersService.getOrderById(parseInt(id, 10));
   }
 
   @Get('/') // Query: ?src=wardId or dest=wardId
   async getOrdersByWard(@Query() query: any) {
-    const { src = null, dest = null, is_active: isActive = true } = query;
+    const { src = null, dest = null, is_closed: isClosed = false } = query;
 
     if (src && dest) {
       throw new BadRequestException(
@@ -38,31 +41,51 @@ export class OrdersController {
     if (src) {
       return await this.ordersService.getOrdersBySourceWard(
         parseInt(src, 10),
-        isActive,
+        isClosed,
       );
     }
 
     if (dest) {
       return await this.ordersService.getOrdersByDestinationWard(
         parseInt(dest, 10),
-        isActive,
+        isClosed,
       );
     }
   }
 
   @Post('/')
-  async createOrder(@Body() createOrderDto: CreateOrderDto) {
+  async createOrder(
+    @Body() createOrderDto: CreateOrderDto,
+    @GetAuthUser() user: User,
+  ) {
     /**
      * When a order is created, automatically the status is "PENDING", and 'dispatched_by' is null
      */
-    return await this.ordersService.create(createOrderDto);
+    return await this.ordersService.create(createOrderDto, user);
   }
 
-  @Patch('/:id')
+  @Put('/:id')
   async updateOrder(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
+    console.log(id);
+    console.log(updateOrderDto);
     return await this.ordersService.update(parseInt(id, 10), updateOrderDto);
+  }
+
+  @Patch('/:id')
+  async updateOrderStatus(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @GetAuthUser() user: User,
+  ) {
+    console.log(id);
+    console.log(updateOrderDto);
+    return await this.ordersService.updateOrderStatus(
+      parseInt(id, 10),
+      updateOrderDto,
+      user,
+    );
   }
 }
