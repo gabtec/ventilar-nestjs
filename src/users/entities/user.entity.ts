@@ -28,8 +28,8 @@ export class User {
   @Column()
   password_hash: string;
 
-  @Column()
-  refresh_token_hash: string;
+  @Column({ nullable: true })
+  refresh_token: string; // a hash
 
   @Column({ nullable: true })
   workplace_id: number | null;

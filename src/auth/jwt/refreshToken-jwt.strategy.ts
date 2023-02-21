@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UsersService } from 'src/users/users.service';
 import { Request } from 'express';
 
 @Injectable()
@@ -9,9 +8,16 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
+  // constructor() {
+  //   super({
+  //     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  //     secretOrKey: process.env.REFRESH_TOKEN_SECRET,
+  //     passReqToCallback: true,
+  //   });
+  // }
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
       secretOrKey: process.env.REFRESH_TOKEN_SECRET,
       passReqToCallback: true,
     });
@@ -29,7 +35,17 @@ export class RefreshTokenStrategy extends PassportStrategy(
   //   return user;
   // }
   validate(req: Request, payload: any) {
-    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    // const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    const refreshToken = req.cookies['refreshCookie'];
+    console.log('on stategy');
+    console.log(refreshToken);
     return { ...payload, refreshToken };
   }
+}
+function cookieExtractor(req) {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies['refreshCookie'];
+  }
+  return token;
 }

@@ -10,15 +10,16 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { GetAuthUser } from 'src/auth/decorators/get-auth-user.decorator';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { User } from 'src/users/entities/user.entity';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { OrdersService } from './orders.service';
 
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
+@UseGuards(AccessTokenGuard)
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {

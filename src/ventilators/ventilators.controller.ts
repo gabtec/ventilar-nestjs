@@ -8,12 +8,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { CreateVentilatorDto } from './dtos/create-ventilator.dto';
 import { VentilatorsService } from './ventilators.service';
 
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
+@UseGuards(AccessTokenGuard)
 @ApiTags('Ventiladors')
 @Controller('ventilators')
 export class VentilatorsController {

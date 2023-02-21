@@ -12,6 +12,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -48,9 +49,11 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException();
     }
-
+    console.log('user from get by mec');
+    console.log(user);
     // must return with passwordHash
-    return JSON.stringify(user);
+    // return JSON.stringify(user);
+    return user;
   }
 
   async getUsersByWard(id: number) {
@@ -69,8 +72,9 @@ export class UsersService {
       }
 
       // const hash = await this.cryptoService.hashPassword(userDto.password);
-      const salt = await bcrypt.genSalt();
-      const hash = await bcrypt.hash(userDto.password, salt);
+      // const salt = await bcrypt.genSalt();
+      // const hash = await bcrypt.hash(userDto.password, salt);
+      const hash = await argon2.hash(userDto.password);
 
       // Must pre-exist the ward with id=1
       const user = this.usersRepository.create({
@@ -132,6 +136,10 @@ export class UsersService {
       password_confirm: userDto.password || userDto.password,
       workplace_id: null, // IT_Service
     });
+  }
+
+  async update(userId: number, data: any) {
+    return await this.usersRepository.update({ id: userId }, data);
   }
 
   // to use with tests

@@ -1,22 +1,13 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  SetMetadata,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllowRoles } from 'src/auth/decorators/roles.decorator';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateWardDto } from './dtos/create-ward.dto';
 import { WardsService } from './wards.service';
 
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
+@UseGuards(AccessTokenGuard)
 @ApiTags('Wards')
 @Controller('wards')
 export class WardsController {

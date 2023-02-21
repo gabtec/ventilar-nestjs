@@ -9,10 +9,7 @@ import { UsersService } from 'src/users/users.service';
 // import { CryptoService } from './crypto.service';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { LoginCredentialsDto } from './dtos/login-credentials.dto';
-import { JwtPayload } from './jwt/tokens-payload.interface';
-import * as bcrypt from 'bcryptjs';
-// import * as argon2 from 'argon2';
-import { User } from 'src/users/entities/user.entity';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -37,8 +34,8 @@ export class AuthService {
     }
 
     try {
-      const data = await this.usersService.getUserByMec(mec);
-      const user = JSON.parse(data);
+      const user = await this.usersService.getUserByMec(mec);
+      // const user = JSON.parse(data);
       if (!user) throw new UnauthorizedException('Invalid credentials!');
 
       // const isAMatch = await this.cryptoService.comparePassword(
@@ -46,22 +43,33 @@ export class AuthService {
       //   user.password_hash,
       // );
 
-      const isAMatch = await bcrypt.compare(password, user.password_hash);
+      const passwordMatches = await argon2.verify(user.password_hash, password);
+      if (!passwordMatches)
+        throw new UnauthorizedException('Invalid credentials!');
+      console.log(user);
 
-      if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
+      // const tokens = await this.getTokens(user.id, user.name);
+      const tokens = await this.getTokens(user.id, user.mec, user.name);
+      console.log(tokens);
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-      // create jwt content
-      const jwtPayload: JwtPayload = { authUserId: user.id };
-      const accessToken: string = await this.jwtService.signAsync(jwtPayload);
-      // const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
-      //   secret: this.configService.get('JWT_TIME'),
-      //   expiresIn: this.configService.get('JWT_TIME'),
+      // const isAMatch = await bcrypt.compare(password, user.password_hash);
+
+      // if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
+
+      // // create jwt content
+      // const jwtPayload: JwtPayload = { authUserId: user.id };
+      // const accessToken: string = await this.jwtService.signAsync(jwtPayload);
+      // // const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
+      // //   secret: this.configService.get('JWT_TIME'),
+      // //   expiresIn: this.configService.get('JWT_TIME'),
+      // // });
+      // const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
+      //   secret: this.configService.get('tokens.refreshToken.secret'),
+      //   expiresIn: this.configService.get('tokens.refreshToken.duration'),
       // });
-      const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.configService.get('tokens.refreshToken.secret'),
-        expiresIn: this.configService.get('tokens.refreshToken.duration'),
-      });
 
+      // response
       return {
         user: {
           id: user.id,
@@ -71,8 +79,7 @@ export class AuthService {
           workplace: user.workplace?.name || null,
           workplace_id: user.workplace?.id || null,
         },
-        accessToken,
-        refreshToken,
+        ...tokens,
       };
     } catch (error) {
       // console.log(error.message);
@@ -80,28 +87,46 @@ export class AuthService {
     }
   }
 
-  async refreshTokens(userID: number, refreshToken: string) {
+  hashData(data: string) {
+    return argon2.hash(data);
+  }
+
+  async updateRefreshToken(userId: number, refreshToken: string) {
+    const hashedRefreshToken = await this.hashData(refreshToken);
+    await this.usersService.update(userId, {
+      refresh_token: hashedRefreshToken,
+    });
+  }
+
+  // async refreshTokens(userId: number, refreshToken: string) {
+  async refreshTokens(userMec: number, refreshToken: string) {
     // TODO
-    const user = await this.usersService.getUserById(userID);
+    const user = await this.usersService.getUserByMec(userMec);
 
-    if (!user || !user.refresh_token_hash) {
-      throw new ForbiddenException('Access Denied');
+    console.log('on refreseh auth.service');
+    console.log(user);
+    console.log(refreshToken);
+    if (!user || !user.refresh_token) {
+      throw new ForbiddenException('Access Denied1');
     }
 
-    if (user.refresh_token_hash !== refreshToken) {
-      throw new ForbiddenException('Access Denied');
-    }
+    const refreshTokenMatches = await argon2.verify(
+      user.refresh_token,
+      refreshToken,
+    );
 
-    const isValid = await this.jwtService.verifyAsync(refreshToken);
-    if (!isValid) {
-      throw new ForbiddenException('Access Denied');
-    }
+    console.log('is a match');
+    console.log(refreshTokenMatches);
+    console.log(user.refresh_token);
+    console.log(refreshToken);
+
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied2');
 
     // create new cookie with refreshToken
-    const tokens = await this.getTokens(user.id, user.name);
+    const tokens = await this.getTokens(user.id, user.mec, user.name);
 
     // TODO save hashed refresh token on database
-    //....
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     // return the new accessToken
     return tokens;
@@ -111,26 +136,40 @@ export class AuthService {
     return await this.usersService.changePassword(userID, changePasswDto);
   }
 
-  async getTokens(userId: string, username: string) {
+  async logout(userId: number) {
+    this.usersService.update(userId, { refresh_token: null });
+  }
+
+  async getTokens(userId: number, mec: number, username: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
+          mec,
           username,
         },
         {
-          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-          expiresIn: '15m',
+          // secret: this.configService.get<string>('JWT_SECRET'),
+          // expiresIn: '15m',
+          secret: this.configService.get<string>('tokens.accessToken.secret'),
+          expiresIn: this.configService.get<string>(
+            'tokens.accessToken.duration',
+          ),
         },
       ),
       this.jwtService.signAsync(
         {
           sub: userId,
+          mec,
           username,
         },
         {
-          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          expiresIn: '7d',
+          // secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+          // expiresIn: '7d',
+          secret: this.configService.get<string>('tokens.refreshToken.secret'),
+          expiresIn: this.configService.get<string>(
+            'tokens.refreshToken.duration',
+          ),
         },
       ),
     ]);
