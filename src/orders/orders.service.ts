@@ -57,9 +57,6 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto, user: User) {
-    console.log(createOrderDto);
-    console.log(user);
-
     // check to_id is_park
     try {
       await this.checkDestinationWardIsPark(createOrderDto.to_id);
@@ -84,7 +81,6 @@ export class OrdersService {
       });
       return order;
     } catch (error) {
-      console.log(error.message);
       throw new BadRequestException(error.message);
     }
   }
@@ -113,15 +109,12 @@ export class OrdersService {
       });
       return res;
     } catch (error) {
-      console.log(error.message);
       throw new InternalServerErrorException();
     }
   }
 
   // async updateOrderStatus(orderID, user: User, status: any, obs: string) {
   async updateOrderStatus(orderID, updateOrderDto: UpdateOrderDto, user: User) {
-    console.log('on order service');
-    console.log(updateOrderDto);
     const prevOrder = await this.ordersRepo.findOneBy({ id: orderID });
     const ventID = parseInt(updateOrderDto.ventilator_id, 10);
     const ventilator = await this.ventilatorsService.getVentilatorById(ventID);
@@ -148,10 +141,7 @@ export class OrdersService {
     }
     newOrder.ventilator = ventilator;
 
-    console.log('will save');
-    console.log(newOrder);
     try {
-      // TODO set ventilatorService.updateStatus()
       await this.ventilatorsService.updateStatus(
         ventID,
         ventilator.is_available,
@@ -159,7 +149,6 @@ export class OrdersService {
       const res = await this.ordersRepo.save(newOrder);
       return res;
     } catch (error) {
-      console.log(error.message);
       throw new InternalServerErrorException();
     }
   }
@@ -174,7 +163,6 @@ export class OrdersService {
       },
     });
 
-    console.log(vent);
     if (!vent) {
       return true;
     }
@@ -188,7 +176,6 @@ export class OrdersService {
     }
 
     const ward = await this.wardsService.getWardById(id);
-    console.log(ward);
     if (!ward.is_park) {
       throw new BadRequestException(
         'The destination ward must be a park of ventilators',

@@ -123,7 +123,6 @@ describe('Users Endpoints (e2e)', () => {
         .send(user)
         .expect(201)
         .expect((resp) => {
-          console.log(resp.body);
           expect(resp.body).not.toHaveProperty('password_hash');
           expect(resp.body).toHaveProperty('id');
           expect(resp.body).toHaveProperty('name');

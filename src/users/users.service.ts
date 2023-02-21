@@ -49,8 +49,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException();
     }
-    console.log('user from get by mec');
-    console.log(user);
+
     // must return with passwordHash
     // return JSON.stringify(user);
     return user;
@@ -93,7 +92,6 @@ export class UsersService {
 
       return this.parseUser(JSON.stringify(newUser));
     } catch (error) {
-      console.log(error.message);
       if (error.message.includes('violates unique constraint')) {
         throw new ConflictException(error.message);
       }

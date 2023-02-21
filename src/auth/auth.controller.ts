@@ -41,7 +41,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const data = await this.authService.login(credentialsDto);
-    console.log(data);
+
     response.cookie('refreshCookie', data.refreshToken, {
       expires: new Date(
         Date.now() +
@@ -53,7 +53,7 @@ export class AuthController {
     return {
       user: data.user,
       accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
+      // refreshToken: data.refreshToken,
     };
   }
 
@@ -87,8 +87,7 @@ export class AuthController {
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
     const refreshToken = req.user['refreshToken'];
-    console.log('on controller');
-    console.log(req.user);
+
     return this.authService.refreshTokens(userMec, refreshToken);
   }
 }

@@ -70,8 +70,6 @@ export class OrdersController {
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
-    console.log(id);
-    console.log(updateOrderDto);
     return await this.ordersService.update(parseInt(id, 10), updateOrderDto);
   }
 
@@ -81,8 +79,6 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
     @GetAuthUser() user: User,
   ) {
-    console.log(id);
-    console.log(updateOrderDto);
     return await this.ordersService.updateOrderStatus(
       parseInt(id, 10),
       updateOrderDto,

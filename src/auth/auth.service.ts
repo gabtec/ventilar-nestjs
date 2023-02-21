@@ -46,11 +46,10 @@ export class AuthService {
       const passwordMatches = await argon2.verify(user.password_hash, password);
       if (!passwordMatches)
         throw new UnauthorizedException('Invalid credentials!');
-      console.log(user);
 
       // const tokens = await this.getTokens(user.id, user.name);
       const tokens = await this.getTokens(user.id, user.mec, user.name);
-      console.log(tokens);
+
       await this.updateRefreshToken(user.id, tokens.refreshToken);
 
       // const isAMatch = await bcrypt.compare(password, user.password_hash);
@@ -82,7 +81,6 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      // console.log(error.message);
       throw error;
     }
   }
@@ -100,12 +98,8 @@ export class AuthService {
 
   // async refreshTokens(userId: number, refreshToken: string) {
   async refreshTokens(userMec: number, refreshToken: string) {
-    // TODO
     const user = await this.usersService.getUserByMec(userMec);
 
-    console.log('on refreseh auth.service');
-    console.log(user);
-    console.log(refreshToken);
     if (!user || !user.refresh_token) {
       throw new ForbiddenException('Access Denied1');
     }
@@ -115,20 +109,12 @@ export class AuthService {
       refreshToken,
     );
 
-    console.log('is a match');
-    console.log(refreshTokenMatches);
-    console.log(user.refresh_token);
-    console.log(refreshToken);
-
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied2');
 
-    // create new cookie with refreshToken
     const tokens = await this.getTokens(user.id, user.mec, user.name);
 
-    // TODO save hashed refresh token on database
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-    // return the new accessToken
     return tokens;
   }
 

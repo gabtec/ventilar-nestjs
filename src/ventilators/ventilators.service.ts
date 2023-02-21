@@ -80,6 +80,7 @@ export class VentilatorsService {
   async updateStatus(ventID: number, isAvailable = false) {
     return this.ventsRepo.update(ventID, { is_available: isAvailable });
   }
+
   async clearTable() {
     const runningMode = this.configService.get('mode');
     console.log(runningMode);
@@ -93,7 +94,7 @@ export class VentilatorsService {
 }
 
 function groupAndCountByWard(list) {
-  // console.log(list);
+  // TODO: this should be done from database
   const group = {};
 
   const loops = list.length;

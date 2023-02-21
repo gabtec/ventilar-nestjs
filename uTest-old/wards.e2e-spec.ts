@@ -122,7 +122,6 @@ describe('Wards', () => {
           .send({ institution: 'HDP' })
           .expect(400)
           .expect(({ body }) => {
-            console.log(body);
             expect(body.message).toBe('name must be a string');
             expect(body.statusCode).toBe(400);
             expect(body.error).toBe('BadRequest');
