@@ -34,6 +34,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly password_confirm: string;
 
+  @IsString()
+  @IsNotEmpty()
+  readonly refresh_token_hash: string;
+
   @IsNumber()
   @IsPositive()
   @IsOptional()

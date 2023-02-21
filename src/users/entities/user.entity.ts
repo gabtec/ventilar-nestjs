@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -15,6 +16,7 @@ export class User {
   id: number;
 
   @Column({ unique: true })
+  @Index()
   mec: number;
 
   @Column()
@@ -25,6 +27,9 @@ export class User {
 
   @Column()
   password_hash: string;
+
+  @Column()
+  refresh_token_hash: string;
 
   @Column({ nullable: true })
   workplace_id: number | null;
