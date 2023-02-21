@@ -25,17 +25,14 @@ export class Ventilator {
   @Column({ unique: true })
   serial: string;
 
+  @Column({ nullable: true })
+  image: string;
+
   @Column('varchar', { length: 4 })
   category: 'VI' | 'VNI';
 
   @Column({ default: true })
   is_available: boolean;
-
-  @CreateDateColumn()
-  created_at: string;
-
-  @UpdateDateColumn()
-  updated_at: string;
 
   // --- relation with Ward
   @Column({ unique: false, nullable: true })
@@ -52,4 +49,11 @@ export class Ventilator {
     nullable: true,
   })
   orders: Order[];
+
+  // timestamps
+  @CreateDateColumn()
+  created_at: string;
+
+  @UpdateDateColumn()
+  updated_at: string;
 }

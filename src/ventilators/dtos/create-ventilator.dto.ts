@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateVentilatorDto {
   @IsString()
@@ -9,6 +9,10 @@ export class CreateVentilatorDto {
 
   @IsString()
   readonly serial: string;
+
+  @IsString()
+  @IsOptional()
+  readonly image?: string;
 
   @IsString({ each: true })
   readonly category: 'VI' | 'VNI';
