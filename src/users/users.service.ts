@@ -42,6 +42,7 @@ export class UsersService {
   }
 
   async getUserByMec(mec: number) {
+    console.log('on get user by id');
     const user = await this.usersRepository.findOneBy({
       mec: mec,
     });

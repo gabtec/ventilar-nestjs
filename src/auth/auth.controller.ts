@@ -21,6 +21,14 @@ import { Request, Response } from 'express';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
 import { ConfigService } from '@nestjs/config';
 
+const cookiesDef = {
+  name: 'refreshCookie',
+  options: {
+    httpOnly: true,
+    maxAge: 100000000,
+  },
+};
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -42,15 +50,85 @@ export class AuthController {
   ) {
     const data = await this.authService.login(credentialsDto);
 
-    response.cookie('refreshCookie', data.refreshToken, {
-      httpOnly: true,
-    });
+    response.cookie(cookiesDef.name, data.refreshToken, cookiesDef.options);
+
+    console.log('/login ====> AT');
+    console.log(data.accessToken);
+    console.log('/login ====> RT cookie 1');
+    console.log(data.refreshToken);
 
     return {
       user: data.user,
       accessToken: data.accessToken,
       // refreshToken: data.refreshToken,
     };
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Get('refresh')
+  async getRefreshTokens(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    console.log('on refresh');
+    console.log(req.user);
+    // const userId = req.user['sub'];
+    const userMec = req.user['mec'];
+    const refreshToken = req.user['refreshToken'];
+
+    // console.log(req.user);
+    try {
+      const tokens = await this.authService.refreshTokens(
+        userMec,
+        refreshToken,
+      );
+
+      response.clearCookie('refreshCookie');
+      response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
+
+      console.log('/refresh ====> AT');
+      console.log(tokens.accessToken);
+      console.log('/refresh ====> RT cookie 2');
+      console.log(tokens.refreshToken);
+
+      return { accessToken: tokens.accessToken };
+    } catch (error) {
+      console.log('erro 3000000');
+      console.log(error);
+    }
+  }
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh')
+  async refreshTokens(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    console.log('on refresh');
+    console.log(req.user);
+    // const userId = req.user['sub'];
+    const userMec = req.user['mec'];
+    const refreshToken = req.user['refreshToken'];
+
+    // console.log(req.user);
+    try {
+      const tokens = await this.authService.refreshTokens(
+        userMec,
+        refreshToken,
+      );
+
+      response.clearCookie('refreshCookie');
+      response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
+
+      console.log('/refresh ====> AT');
+      console.log(tokens.accessToken);
+      console.log('/refresh ====> RT cookie 2');
+      console.log(tokens.refreshToken);
+
+      return { accessToken: tokens.accessToken };
+    } catch (error) {
+      console.log('erro 3000000');
+      console.log(error);
+    }
   }
 
   // @UseGuards(AuthGuard())
@@ -78,23 +156,9 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     // clear cookie
-    response.clearCookie('accessToken');
+    response.clearCookie('refreshCookie');
 
     // clear database token
     return await this.authService.logout(req.user['sub']);
-  }
-
-  @UseGuards(RefreshTokenGuard)
-  @Post('refresh')
-  refreshTokens(@Req() req: Request) {
-    console.log('on refresh');
-    // console.log(req.headers);
-    // const userId = req.user['sub'];
-    const userMec = req.user['mec'];
-    const refreshToken = req.user['refreshToken'];
-
-    // console.log(req.user);
-
-    return this.authService.refreshTokens(userMec, refreshToken);
   }
 }

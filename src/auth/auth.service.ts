@@ -101,9 +101,12 @@ export class AuthService {
 
   // async refreshTokens(userId: number, refreshToken: string) {
   async refreshTokens(userMec: number, refreshToken: string) {
+    console.log('on service rt');
     const user = await this.usersService.getUserByMec(userMec);
 
     if (!user || !user.refresh_token) {
+      console.log('user nnot found');
+      console.log(user);
       throw new ForbiddenException('Access Denied1');
     }
 
