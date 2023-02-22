@@ -28,7 +28,7 @@ export class AuthService {
       mec = parseInt(username, 10);
       if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!');
     } catch (error) {
-      console.log('Username must be a number: mec');
+      console.error('Username must be a number: mec');
       // throw new BadRequestException('Invalid credentials!');
       throw new UnauthorizedException('Invalid credentials!');
     }
@@ -81,7 +81,10 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      throw error;
+      console.error('[ERROR]: Login failed!');
+      console.error(error.message);
+      // throw error;
+      throw new UnauthorizedException('Invalid credentials!');
     }
   }
 
@@ -123,7 +126,7 @@ export class AuthService {
   }
 
   async logout(userId: number) {
-    this.usersService.update(userId, { refresh_token: null });
+    return await this.usersService.update(userId, { refresh_token: null });
   }
 
   async getTokens(userId: number, mec: number, username: string) {

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "HDP_Urgência",
+    "institution": "HDP",
+    "is_park": true
+  },
+  {
+    "name": "HDP_Medicina",
+    "institution": "HDP",
+    "is_park": false
+  },
+  {
+    "name": "HSA_Intensiva",
+    "institution": "HSA",
+    "is_park": true
+  }
+]

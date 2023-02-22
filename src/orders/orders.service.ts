@@ -60,7 +60,6 @@ export class OrdersService {
     // check to_id is_park
     try {
       await this.checkDestinationWardIsPark(createOrderDto.to_id);
-      // TODO
     } catch (error) {
       throw error;
     }

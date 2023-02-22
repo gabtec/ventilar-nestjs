@@ -15,7 +15,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
-  app.enableCors(); // WARNING: fetch API requires 'PATCH' not 'patch'
+  app.enableCors({
+    // origin: ['http://localhost:3000'],
+    origin: true,
+    credentials: true,
+  }); // WARNING: fetch API requires 'PATCH' not 'patch'
   app.use(helmet());
   app.use(cookieParser()); // to handle refreshToken
 

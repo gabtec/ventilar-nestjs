@@ -39,3 +39,8 @@ Cannot find module 'src/orders/entities/order.entity' from 'wards/entities/ward.
 
 ...
 `````
+
+## Development decisions
+
+- it's allowed to create a user without a ward, because admin user may not have a ward
+- but other users, MUST, be created with a ward associated

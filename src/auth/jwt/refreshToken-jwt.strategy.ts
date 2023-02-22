@@ -16,6 +16,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   //   });
   // }
   constructor() {
+    console.log('on rt guard');
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
       secretOrKey: process.env.REFRESH_TOKEN_SECRET,
@@ -37,7 +38,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
   validate(req: Request, payload: any) {
     // const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
     const refreshToken = req.cookies['refreshCookie'];
-    console.log('on stategy');
+
+    console.log(payload);
     console.log(refreshToken);
     return { ...payload, refreshToken };
   }

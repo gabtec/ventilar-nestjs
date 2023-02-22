@@ -1,0 +1,30 @@
+[
+  {
+    "brand": "Philips",
+    "model": "Trilogy",
+    "serial": "3000-A5X",
+    "category": "VNI",
+    "parked_at": 1
+  },
+  {
+    "brand": "LifePack",
+    "model": "12",
+    "serial": "LP12-sdsada87",
+    "category": "VNI",
+    "parked_at": 1
+  },
+  {
+    "brand": "Samsung",
+    "model": "XPTO",
+    "serial": "JSUU-SSXPTO",
+    "category": "VI",
+    "parked_at": 3
+  },
+  {
+    "brand": "Philips",
+    "model": "Trilogy",
+    "serial": "3000-Y5ER",
+    "category": "VNI",
+    "parked_at": 3
+  }
+]

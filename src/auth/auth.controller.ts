@@ -43,10 +43,6 @@ export class AuthController {
     const data = await this.authService.login(credentialsDto);
 
     response.cookie('refreshCookie', data.refreshToken, {
-      expires: new Date(
-        Date.now() +
-          parseInt(this.configService.get('tokens.refreshToken.duration')),
-      ),
       httpOnly: true,
     });
 
@@ -77,16 +73,27 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Get('logout')
-  logout(@Req() req: Request) {
-    this.authService.logout(req.user['sub']);
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    // clear cookie
+    response.clearCookie('accessToken');
+
+    // clear database token
+    return await this.authService.logout(req.user['sub']);
   }
 
   @UseGuards(RefreshTokenGuard)
-  @Get('refresh')
+  @Post('refresh')
   refreshTokens(@Req() req: Request) {
+    console.log('on refresh');
+    // console.log(req.headers);
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
     const refreshToken = req.user['refreshToken'];
+
+    // console.log(req.user);
 
     return this.authService.refreshTokens(userMec, refreshToken);
   }
