@@ -1,6 +1,7 @@
 # BACKLOG
 
 [] refresh token logic not working. I bypassed with long lived accessToken, for now
+[] @authController cookiesDef has maxAge hardcoded to 1000000
 
 [] TO_FIX: on new dev workspace deploy I 1st have to create a ward in database (manually), and then I can use /api/users/register to create admin user (this must be automated)
 Use a temp container with plsql to run a script...
