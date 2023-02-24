@@ -3,11 +3,13 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Patch,
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -32,10 +34,7 @@ const cookiesDef = {
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiResponse({
     status: 200,
@@ -48,20 +47,23 @@ export class AuthController {
     @Body() credentialsDto: LoginCredentialsDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const data = await this.authService.login(credentialsDto);
+    try {
+      const data = await this.authService.login(credentialsDto);
 
-    response.cookie(cookiesDef.name, data.refreshToken, cookiesDef.options);
-
-    console.log('/login ====> AT');
-    console.log(data.accessToken);
-    console.log('/login ====> RT cookie 1');
-    console.log(data.refreshToken);
-
-    return {
-      user: data.user,
-      accessToken: data.accessToken,
-      // refreshToken: data.refreshToken,
-    };
+      response.cookie(cookiesDef.name, data.refreshToken, cookiesDef.options);
+      return {
+        user: data.user,
+        accessToken: data.accessToken,
+        // refreshToken: data.refreshToken,
+      };
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('LOG [on AuthController]:', error.message);
+        // // real error are omitted from frontend, for security reasons
+        console.log('LOG [on AuthController]: Will throw generic 401');
+      }
+      return new UnauthorizedException('Credênciais Inválidas');
+    }
   }
 
   @UseGuards(RefreshTokenGuard)

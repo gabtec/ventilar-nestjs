@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -22,70 +24,38 @@ export class AuthService {
   async login(credentials: LoginCredentialsDto) {
     const { username, password } = credentials;
 
-    let mec: number;
+    // try {
+    const user = await this.usersService.getUserByMec(username);
 
-    try {
-      mec = parseInt(username, 10);
-      if (isNaN(mec)) throw new UnauthorizedException('Invalid credentials!');
-    } catch (error) {
-      console.error('Username must be a number: mec');
-      // throw new BadRequestException('Invalid credentials!');
-      throw new UnauthorizedException('Invalid credentials!');
-    }
+    // if (!user) throw new UnauthorizedException('Invalid credentials!');
+    if (!user) throw new NotFoundException('User Not Found!');
 
-    try {
-      const user = await this.usersService.getUserByMec(mec);
-      // const user = JSON.parse(data);
-      if (!user) throw new UnauthorizedException('Invalid credentials!');
+    const passwordMatches = await argon2.verify(user.password_hash, password);
 
-      // const isAMatch = await this.cryptoService.comparePassword(
-      //   password,
-      //   user.password_hash,
-      // );
+    if (!passwordMatches)
+      throw new BadRequestException('Passwords Not Matching!');
 
-      const passwordMatches = await argon2.verify(user.password_hash, password);
-      if (!passwordMatches)
-        throw new UnauthorizedException('Invalid credentials!');
+    const tokens = await this.getTokens(user.id, user.mec, user.name);
 
-      // const tokens = await this.getTokens(user.id, user.name);
-      const tokens = await this.getTokens(user.id, user.mec, user.name);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
 
-      await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return {
+      user: {
+        id: user.id,
+        mec: user.mec,
+        name: user.name,
+        role: user.role,
+        workplace: user.workplace?.name || null,
+        workplace_id: user.workplace?.id || null,
+      },
+      ...tokens,
+    };
+    // } catch (error) {
+    //   console.error('[AuthService]: Login() failed!');
+    //   console.error(error.message);
 
-      // const isAMatch = await bcrypt.compare(password, user.password_hash);
-
-      // if (!isAMatch) throw new UnauthorizedException('Invalid credentials!');
-
-      // // create jwt content
-      // const jwtPayload: JwtPayload = { authUserId: user.id };
-      // const accessToken: string = await this.jwtService.signAsync(jwtPayload);
-      // // const accessToken: string = await this.jwtService.signAsync(jwtPayload, {
-      // //   secret: this.configService.get('JWT_TIME'),
-      // //   expiresIn: this.configService.get('JWT_TIME'),
-      // // });
-      // const refreshToken: string = await this.jwtService.signAsync(jwtPayload, {
-      //   secret: this.configService.get('tokens.refreshToken.secret'),
-      //   expiresIn: this.configService.get('tokens.refreshToken.duration'),
-      // });
-
-      // response
-      return {
-        user: {
-          id: user.id,
-          mec: user.mec,
-          name: user.name,
-          role: user.role,
-          workplace: user.workplace?.name || null,
-          workplace_id: user.workplace?.id || null,
-        },
-        ...tokens,
-      };
-    } catch (error) {
-      console.error('[ERROR]: Login failed!');
-      console.error(error.message);
-      // throw error;
-      throw new UnauthorizedException('Invalid credentials!');
-    }
+    //   throw new UnauthorizedException('Invalid credentials!-Z');
+    // }
   }
 
   hashData(data: string) {
