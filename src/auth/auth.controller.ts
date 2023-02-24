@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Patch,
   Post,
@@ -21,7 +20,6 @@ import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 import { AccessTokenGuard } from './guards/accessToken.guard';
 import { Request, Response } from 'express';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
-import { ConfigService } from '@nestjs/config';
 
 const cookiesDef = {
   name: 'refreshCookie',

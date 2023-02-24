@@ -79,6 +79,8 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
     @GetAuthUser() user: User,
   ) {
+    console.log(id);
+    console.log(updateOrderDto);
     return await this.ordersService.updateOrderStatus(
       parseInt(id, 10),
       updateOrderDto,
