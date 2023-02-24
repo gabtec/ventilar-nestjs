@@ -42,18 +42,21 @@ export class UsersService {
   }
 
   async getUserByMec(mec: number) {
-    console.log('on get user by id');
-    const user = await this.usersRepository.findOneBy({
+    return await this.usersRepository.findOneBy({
       mec: mec,
     });
+    // console.log('on get user by id');
+    // const user = await this.usersRepository.findOneBy({
+    //   mec: mec,
+    // });
 
-    if (!user) {
-      throw new NotFoundException();
-    }
+    // if (!user) {
+    //   throw new NotFoundException('User Not Found!');
+    // }
 
-    // must return with passwordHash
-    // return JSON.stringify(user);
-    return user;
+    // // must return with passwordHash
+    // // return JSON.stringify(user);
+    // return user;
   }
 
   async getUsersByWard(id: number) {
