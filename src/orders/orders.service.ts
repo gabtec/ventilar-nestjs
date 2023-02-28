@@ -8,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { VentilatorsService } from 'src/ventilators/ventilators.service';
+import { Ward } from 'src/wards/entities/ward.entity';
 import { WardsService } from 'src/wards/wards.service';
 import { Not, Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos/create-order.dto';
@@ -22,10 +23,10 @@ export class OrdersService {
     private readonly ventilatorsService: VentilatorsService,
   ) {}
 
-  async getOrdersBySourceWard(id: number, isClosed: boolean) {
+  async getOrdersBySourceWard(id: number) {
     return this.ordersRepo.find({
-      where: { from_id: id, is_closed: isClosed },
-      relations: ['ventilator'],
+      relations: ['ventilator', 'to', 'from', 'requested_by', 'dispatched_by'],
+      where: { from: { id }, is_closed: false },
     });
     // return (
     //   this.ordersRepo
@@ -40,10 +41,10 @@ export class OrdersService {
     // );
   }
 
-  async getOrdersByDestinationWard(id: number, isClosed: boolean) {
+  async getOrdersByDestinationWard(id: number) {
     return this.ordersRepo.find({
-      where: { to_id: id, is_closed: isClosed },
-      relations: ['ventilator'],
+      relations: ['ventilator', 'to', 'from', 'requested_by', 'dispatched_by'],
+      where: { to: { id: id }, is_closed: false },
     });
   }
 
@@ -57,6 +58,7 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto, user: User) {
+    console.log(createOrderDto);
     // check to_id is_park
     try {
       await this.checkDestinationWardIsPark(createOrderDto.to_id);
@@ -72,12 +74,19 @@ export class OrdersService {
           throw new ConflictException('This ventilator has an active order.');
         }
       }
-      const order = this.ordersRepo.save({
+      const destPark: Ward = await this.wardsService.getWardById(
+        createOrderDto.to_id,
+      );
+
+      const newOrder = {
         ...createOrderDto,
-        from_id: user.workplace_id,
-        created_by: `(${user.mec}) ${user.name}`,
-        updated_by: `(${user.mec}) ${user.name}`,
-      });
+        to: destPark,
+        from: user.workplace,
+        created_by: user,
+        updated_by: user,
+      };
+
+      const order = this.ordersRepo.save(newOrder);
       return order;
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -85,66 +94,68 @@ export class OrdersService {
   }
 
   async update(orderId: number, updateOrderDto: UpdateOrderDto) {
-    if (updateOrderDto.status === 'CLOSED') {
-      updateOrderDto.is_closed = true;
-    }
-
-    if (updateOrderDto.status && updateOrderDto.status !== 'CLOSED') {
-      updateOrderDto.is_closed = false;
-    }
-
-    if (
-      updateOrderDto.status === 'DISPATCHED' &&
-      updateOrderDto.dispatched_by == null
-    ) {
-      throw new BadRequestException(
-        'When changing status to "DISPATCHED", the "dispatched_by" user is REQUIRED!',
-      );
-    }
     try {
-      const res = await this.ordersRepo.update(orderId, {
-        ...updateOrderDto,
-        ventilator_id: parseInt(updateOrderDto.ventilator_id, 10),
-      });
+      const res = await this.ordersRepo.update({ id: orderId }, updateOrderDto);
       return res;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }
 
   // async updateOrderStatus(orderID, user: User, status: any, obs: string) {
-  async updateOrderStatus(orderID, updateOrderDto: UpdateOrderDto, user: User) {
-    const prevOrder = await this.ordersRepo.findOneBy({ id: orderID });
-    const ventID = parseInt(updateOrderDto.ventilator_id, 10);
-    const ventilator = await this.ventilatorsService.getVentilatorById(ventID);
+  async updateOrderStatus(
+    orderID: number,
+    updateOrderDto: UpdateOrderDto,
+    user: User,
+  ) {
+    const prevOrder = await this.ordersRepo.findOne({
+      relations: ['ventilator'],
+      where: { id: orderID },
+    });
 
     if (!prevOrder) {
       throw new NotFoundException('Cannot find the order to update');
     }
 
     const newOrder = { ...prevOrder };
-    newOrder.obs = prevOrder.obs + '\n' + updateOrderDto.obs;
-    newOrder.status = updateOrderDto.status;
-    newOrder.is_closed = updateOrderDto.status === 'CLOSED' ? true : false;
+    // UC 1 - is PENDING and dispatcher dispatches
+    // UC 1.1 - set selected ventilator to id_free=false
+    // UC 1.2 - set selected order status=DISPATCHED & dispatched_by = user from token
+    if (updateOrderDto.action === 'DISPATCH') {
+      const ventID = parseInt(updateOrderDto.ventilator_id, 10);
+      const ventilator = await this.ventilatorsService.getVentilatorById(
+        ventID,
+      );
 
-    newOrder.updated_by = `(${user.mec}) ${user.name}`;
-    newOrder.dispatched_by =
-      user.role === 'dispatcher' ? `(${user.mec}) ${user.name}` : null;
-    // newOrder.ventilator_id = updateOrderDto.ventilator_id || null;
-    if (updateOrderDto.ventilator_id && user.role === 'dispatcher') {
-      ventilator.is_available = false;
+      newOrder.status = 'DISPATCHED';
+      newOrder.dispatched_by = user;
+      newOrder.obs = prevOrder.obs.concat('\n', updateOrderDto.obs);
+      ventilator.is_free = false;
+      newOrder.ventilator = ventilator;
     }
 
-    if (updateOrderDto.status === 'CLOSED' && user.role === 'dispatcher') {
-      ventilator.is_available = true;
+    if (updateOrderDto.action === 'RETURN') {
+      newOrder.status = 'RETURNED';
+      newOrder.delivered_by = user;
+      newOrder.obs = prevOrder.obs.concat('\n', updateOrderDto.obs);
     }
-    newOrder.ventilator = ventilator;
+
+    if (updateOrderDto.action === 'RECEIVE') {
+      newOrder.status = 'CLOSED';
+      newOrder.is_closed = true;
+      newOrder.received_by = user;
+      newOrder.obs = prevOrder.obs.concat('\n', updateOrderDto.obs);
+
+      const ventilator = await this.ventilatorsService.getVentilatorById(
+        prevOrder.ventilator.id,
+      );
+
+      ventilator.is_free = true;
+      newOrder.ventilator = ventilator;
+    }
 
     try {
-      await this.ventilatorsService.updateStatus(
-        ventID,
-        ventilator.is_available,
-      );
       const res = await this.ordersRepo.save(newOrder);
       return res;
     } catch (error) {
@@ -156,8 +167,11 @@ export class OrdersService {
     if (ventID === 0) return true;
     // if a vent as an open order (status != closed), new order must be rejected
     const vent = this.ordersRepo.findOne({
+      relations: ['ventilator'],
       where: {
-        ventilator_id: ventID,
+        ventilator: {
+          id: ventID,
+        },
         status: Not('CLOSED'),
       },
     });

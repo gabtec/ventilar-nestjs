@@ -42,7 +42,11 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    // it('should return 401 if login fails: bacause username not a number', async () => {});
+    // it('should return 401 if login fails: bacause username not a number', async () => {
+    //   // I could call controller.login( testDto as any) and bypass TS valdation of string
+    //   // but class-validator won't event let the controller be called
+    //   // so this, must be tested in e2e
+    // });
 
     it('should return 401 if login fails: bacause username not exists', async () => {
       const mockResp: any = {

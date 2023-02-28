@@ -25,6 +25,9 @@ export class WardsService {
     return await this.wardsRepo.findAllVentsInThisWard(id);
   }
 
+  async countVentilatorsByWardAndCategory(cat: 'VI' | 'VNI') {
+    return await this.wardsRepo.countVentilatorsByWardAndCategory(cat);
+  }
   // constructor(
   //   @InjectRepository(Ward) private readonly wardsRepository: Repository<Ward>,
   // ) {}

@@ -1,4 +1,3 @@
-import { Order } from 'src/orders/entities/order.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
   Column,
@@ -6,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -32,23 +30,24 @@ export class Ventilator {
   category: 'VI' | 'VNI';
 
   @Column({ default: true })
-  is_available: boolean;
+  is_free: boolean;
 
   // --- relation with Ward
-  @Column({ unique: false, nullable: true })
-  parked_at: number | null; // ward_id where it's placed
+  // @Column({ unique: false, nullable: true })
+  @Column()
+  park_id: number | null; // ward_id where it's placed
 
   @ManyToOne(() => Ward, (park) => park.ventilators, {
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'parked_at' })
+  @JoinColumn({ name: 'park_id' })
   park: Ward;
 
-  // --- relation with Ventilator
-  @OneToMany(() => Order, (order) => order.ventilator_id, {
-    nullable: true,
-  })
-  orders: Order[];
+  // // --- relation with Ventilator
+  // @OneToMany(() => Order, (order) => order.ventilator_id, {
+  //   nullable: true,
+  // })
+  // orders: Order[];
 
   // timestamps
   @CreateDateColumn()

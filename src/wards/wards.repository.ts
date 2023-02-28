@@ -16,13 +16,17 @@ export class WardsRepository {
   }
 
   async findAll(limit: number, offset: number): Promise<Ward[]> {
-    return await this.wardsRepository.find({ skip: offset, take: limit });
+    return await this.wardsRepository.find({
+      skip: offset,
+      take: limit,
+      relations: ['ventilators'],
+    });
   }
 
   async findAllVentsInThisWard(id: number): Promise<any[]> {
     return await this.wardsRepository.find({
-      where: { id },
       relations: ['ventilators'],
+      where: { id, ventilators: { is_free: true } },
     });
   }
 
@@ -39,5 +43,24 @@ export class WardsRepository {
     // return await this.wardsRepository.clear();
     // return await this.wardsRepository.query('TRUNCATE TABLE t_wards CASCADE');
     return await this.wardsRepository.delete(id);
+  }
+
+  async countVentilatorsByWardAndCategory(cat: 'VI' | 'VNI') {
+    // return this.wardsRepository.find({
+    //   relations: ['ventilators'],
+    //   where: { ventilators: { category: cat } },
+    // });
+    return this.wardsRepository.query(`
+      SELECT p.name, COUNT(v.is_free) FROM
+        (
+          SELECT w.id, w.name FROM t_wards as w
+          WHERE w.is_parK=true
+        ) as p
+      LEFT JOIN t_ventilators as v
+      ON v.park_id=p.id
+      WHERE v.category='${cat.toUpperCase()}'
+      AND v.is_free=true
+      GROUP BY p.name;
+    `);
   }
 }

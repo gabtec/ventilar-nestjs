@@ -18,5 +18,5 @@ export class CreateVentilatorDto {
   readonly category: 'VI' | 'VNI';
 
   @IsNumber()
-  readonly parked_at: number;
+  readonly park_id: number;
 }

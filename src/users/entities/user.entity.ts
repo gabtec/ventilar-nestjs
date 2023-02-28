@@ -23,7 +23,7 @@ export class User {
   name: string;
 
   @Column({ default: 'consumer' })
-  role: string | null | undefined;
+  role: string;
 
   @Column()
   password_hash: string;
@@ -31,7 +31,7 @@ export class User {
   @Column({ nullable: true })
   refresh_token: string; // a hash
 
-  @Column({ nullable: true })
+  @Column({ nullable: true }) // because admin user may not have workplace defined
   workplace_id: number | null;
 
   // @Column({ nullable: true }) //optional: because admin may not have workplace

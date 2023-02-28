@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -38,7 +39,7 @@ export class VentilatorsService {
     const vents = await this.ventsRepo.find({
       relations: ['park'],
       where: {
-        parked_at: parkId,
+        park_id: parkId,
       },
     });
 
@@ -46,11 +47,11 @@ export class VentilatorsService {
     // return await this.ventsRepo.find({ relations: ['park'], where: { id } });
   }
 
-  async getVentilatorsByStatus(category: 'VNI' | 'VI', areAvailable = true) {
+  async getVentilatorsAndCountByWardAndCat(category: 'VNI' | 'VI') {
     const vents = await this.ventsRepo.find({
       relations: ['park'],
       where: {
-        is_available: areAvailable,
+        is_free: true,
         category: category,
       },
     });
@@ -61,11 +62,18 @@ export class VentilatorsService {
   }
 
   async create(ventilatorDto: CreateVentilatorDto) {
-    // const park = await this.wardsRepo.findOneBy({
-    //   id: ventilatorDto.parked_at,
-    // });
+    if (ventilatorDto.park_id != null) {
+      // when NOT undefined, null or zero
+      const ward = await this.wardsRepo.findOneBy({
+        id: ventilatorDto.park_id,
+      });
+      if (!ward) throw new NotFoundException('Destiny ward not found!');
 
-    // const vent = await this.ventsRepo.create(ventilatorDto);
+      if (ward && ward.is_park !== true)
+        throw new BadRequestException(
+          'Can not assign a ventilator to a non park ward.',
+        );
+    }
 
     try {
       return await this.ventsRepo.save(ventilatorDto);
@@ -78,7 +86,7 @@ export class VentilatorsService {
   }
 
   async updateStatus(ventID: number, isAvailable = false) {
-    return this.ventsRepo.update(ventID, { is_available: isAvailable });
+    return this.ventsRepo.update(ventID, { is_free: isAvailable });
   }
 
   async clearTable() {
@@ -94,6 +102,7 @@ export class VentilatorsService {
 }
 
 function groupAndCountByWard(list) {
+  console.log(list);
   // TODO: this should be done from database
   const group = {};
 

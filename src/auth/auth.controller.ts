@@ -57,7 +57,7 @@ export class AuthController {
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.log('LOG [on AuthController]:', error.message);
-        // // real error are omitted from frontend, for security reasons
+        // real error are omitted from frontend, for security reasons
         console.log('LOG [on AuthController]: Will throw generic 401');
       }
       return new UnauthorizedException('Credênciais Inválidas');
@@ -70,8 +70,8 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log('on refresh');
-    console.log(req.user);
+    // console.log('on refresh');
+    // console.log(req.user);
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
     const refreshToken = req.user['refreshToken'];
@@ -86,14 +86,14 @@ export class AuthController {
       response.clearCookie('refreshCookie');
       response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
 
-      console.log('/refresh ====> AT');
-      console.log(tokens.accessToken);
-      console.log('/refresh ====> RT cookie 2');
-      console.log(tokens.refreshToken);
+      // console.log('/refresh ====> AT');
+      // console.log(tokens.accessToken);
+      // console.log('/refresh ====> RT cookie 2');
+      // console.log(tokens.refreshToken);
 
       return { accessToken: tokens.accessToken };
     } catch (error) {
-      console.log('erro 3000000');
+      // console.log('erro 3000000');
       console.log(error);
     }
   }
@@ -103,8 +103,8 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log('on refresh');
-    console.log(req.user);
+    // console.log('on refresh');
+    // console.log(req.user);
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
     const refreshToken = req.user['refreshToken'];
@@ -119,14 +119,14 @@ export class AuthController {
       response.clearCookie('refreshCookie');
       response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
 
-      console.log('/refresh ====> AT');
-      console.log(tokens.accessToken);
-      console.log('/refresh ====> RT cookie 2');
-      console.log(tokens.refreshToken);
+      // console.log('/refresh ====> AT');
+      // console.log(tokens.accessToken);
+      // console.log('/refresh ====> RT cookie 2');
+      // console.log(tokens.refreshToken);
 
       return { accessToken: tokens.accessToken };
     } catch (error) {
-      console.log('erro 3000000');
+      // console.log('erro 3000000');
       console.log(error);
     }
   }

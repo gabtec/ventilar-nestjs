@@ -40,16 +40,12 @@ export class OrdersController {
       );
     }
     if (src) {
-      return await this.ordersService.getOrdersBySourceWard(
-        parseInt(src, 10),
-        isClosed,
-      );
+      return await this.ordersService.getOrdersBySourceWard(parseInt(src, 10));
     }
 
     if (dest) {
       return await this.ordersService.getOrdersByDestinationWard(
         parseInt(dest, 10),
-        isClosed,
       );
     }
   }
@@ -70,7 +66,7 @@ export class OrdersController {
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
-    return await this.ordersService.update(parseInt(id, 10), updateOrderDto);
+    return await this.ordersService.update(+id, updateOrderDto);
   }
 
   @Patch('/:id')
@@ -79,10 +75,10 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
     @GetAuthUser() user: User,
   ) {
-    console.log(id);
     console.log(updateOrderDto);
+
     return await this.ordersService.updateOrderStatus(
-      parseInt(id, 10),
+      +id,
       updateOrderDto,
       user,
     );

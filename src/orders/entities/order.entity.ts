@@ -1,3 +1,4 @@
+import { User } from 'src/users/entities/user.entity';
 import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
 import { Ward } from 'src/wards/entities/ward.entity';
 import {
@@ -30,67 +31,48 @@ export class Order {
   @Column({ default: false })
   is_closed: boolean;
 
-  @Column({ unique: false })
-  from_id: number; // the ward requiring
+  // @Column({ unique: false })
+  // from_id: number; // the ward requiring
 
-  @Column({ unique: false, nullable: true })
-  to_id: number; // the ward receiving
+  // @Column({ unique: false, nullable: true })
+  // to_id: number; // the ward receiving
 
-  @ManyToOne(() => Ward, (ward) => ward.orders, { onDelete: 'SET NULL' })
-  // @JoinColumn([
-  //   {
-  //     name: 'from_id',
-  //     referencedColumnName: 'id',
-  //   },
-  //   {
-  //     name: 'to_id',
-  //     referencedColumnName: 'id2',
-  //   },
-  // ])
-  ward: Ward;
+  @ManyToOne(() => Ward, (ward) => ward.id)
+  @JoinColumn({ name: 'from_id' })
+  from: Ward;
+
+  @ManyToOne(() => Ward, (ward) => ward.id)
+  @JoinColumn({ name: 'to_id' })
+  to: Ward;
 
   // MUST validate on create new order, if a requested ventilator_id is in another active Order
   // then it can not be used on new Order, until that active order is et to closed
-  @Column({ unique: false, nullable: true })
-  ventilator_id: number;
+  // @Column({ unique: false, nullable: true })
+  // ventilator_id: number;
+  // // @Check(`"ventilator.status" <> 'active' AND "order.status" = 'PENDING'`)
 
-  @ManyToOne(() => Ventilator, (vent) => vent.id, {
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => Ventilator, (ventilator) => ventilator.id, { cascade: true })
   @JoinColumn({ name: 'ventilator_id' })
-  // @Check(`"ventilator.status" <> 'active' AND "order.status" = 'PENDING'`)
-  ventilator?: Ventilator;
+  ventilator: Ventilator;
+
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'requested_by_id' })
+  requested_by: User;
+
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'dispatched_by_id' })
+  dispatched_by: User;
+
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'delivered_by_id' })
+  delivered_by: User;
+
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'received_by_id' })
+  received_by: User;
 
   @Column('text', { nullable: true })
   obs?: string;
-
-  /*  This is kind of info logs.
-      The recomendation, for now, is:
-      (user.mec) user.name
-      (3001) John Doe
-   */
-
-  // @Column()
-  // requested_by: number; // userID that places the order
-
-  // @Column()
-  // dispatched_by: number; // userID that delivers the order
-
-  // @OneToMany(() => User, (user) => user.orders)
-  // @JoinColumn([
-  //   { name: 'requested_by', referencedColumnName: 'id' },
-  //   { name: 'dispatched_by', referencedColumnName: 'id' },
-  // ])
-  // user: User;
-
-  @Column()
-  created_by: string; // user info that places the order
-
-  @Column({ nullable: true })
-  dispatched_by: string; // user info that delivers the order
-
-  @Column()
-  updated_by: string; // user info that updates order, e.g. cancel it before dispatched
 
   @CreateDateColumn()
   created_at: string;

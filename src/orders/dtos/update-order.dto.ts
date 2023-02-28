@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 export class UpdateOrderDto {
   @IsOptional()
@@ -22,10 +23,6 @@ export class UpdateOrderDto {
 
   @IsOptional()
   @IsString()
-  dispatched_by?: string; // user info that places the order e.g (3000) John Doe
-
-  @IsOptional()
-  @IsString()
   ventilator_id?: string;
 
   @IsOptional()
@@ -35,4 +32,8 @@ export class UpdateOrderDto {
   @IsOptional()
   @IsBoolean()
   is_closed?: boolean;
+
+  @IsOptional()
+  @IsString()
+  action?: string; // DISPATCH | DELIVER | RECEIVE
 }

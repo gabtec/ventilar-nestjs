@@ -68,4 +68,15 @@ export class WardsController {
       parseInt(parkID, 10),
     );
   }
+
+  @Get('/count_ventilators/:cat')
+  @ApiResponse({
+    status: 200,
+    description: 'The resource was successfully fetched.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async countVentilatorsByWardAndCategory(@Param('cat') cat: 'VI' | 'VNI') {
+    return await this.wardsService.countVentilatorsByWardAndCategory(cat);
+  }
 }
