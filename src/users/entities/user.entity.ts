@@ -1,4 +1,4 @@
-import { Ward } from 'src/wards/entities/ward.entity';
+import { Ward } from '../../wards/entities/ward.entity';
 import {
   Column,
   CreateDateColumn,

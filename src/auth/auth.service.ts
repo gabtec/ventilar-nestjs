@@ -110,12 +110,12 @@ export class AuthService {
           username,
         },
         {
-          // secret: this.configService.get<string>('JWT_SECRET'),
-          // expiresIn: '15m',
-          secret: this.configService.get<string>('tokens.accessToken.secret'),
-          expiresIn: this.configService.get<string>(
-            'tokens.accessToken.duration',
-          ),
+          secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
+          expiresIn: this.configService.get<string>('ACCESS_TOKEN_DURATION'),
+          // secret: this.configService.get<string>('tokens.accessToken.secret'),
+          // expiresIn: this.configService.get<string>(
+          //   'tokens.accessToken.duration',
+          // ),
         },
       ),
       this.jwtService.signAsync(
@@ -125,12 +125,13 @@ export class AuthService {
           username,
         },
         {
-          // secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+          secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+          expiresIn: this.configService.get<string>('REFRESH_TOKEN_DURATION'),
           // expiresIn: '7d',
-          secret: this.configService.get<string>('tokens.refreshToken.secret'),
-          expiresIn: this.configService.get<string>(
-            'tokens.refreshToken.duration',
-          ),
+          // secret: this.configService.get<string>('tokens.refreshToken.secret'),
+          // expiresIn: this.configService.get<string>(
+          //   'tokens.refreshToken.duration',
+          // ),
         },
       ),
     ]);

@@ -1,4 +1,4 @@
-import { Ward } from 'src/wards/entities/ward.entity';
+import { Ward } from '../../wards/entities/ward.entity';
 import {
   Column,
   CreateDateColumn,
@@ -23,8 +23,8 @@ export class Ventilator {
   @Column({ unique: true })
   serial: string;
 
-  @Column({ nullable: true })
-  image: string;
+  // @Column({ nullable: true })
+  // image: string;
 
   @Column('varchar', { length: 4 })
   category: 'VI' | 'VNI';

@@ -1,6 +1,5 @@
-import { Order } from 'src/orders/entities/order.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
+import { User } from '../../users/entities/user.entity';
+import { Ventilator } from '../../ventilators/entities/ventilator.entity';
 import {
   AfterLoad,
   Column,

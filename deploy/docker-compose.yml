@@ -1,0 +1,38 @@
+---
+version: '3'
+
+services:
+  db:
+    image: postgres:15.1-alpine
+    container_name: db
+    restart: unless-stopped
+    # ports:
+    #   - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=ventilar_db
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
+  api:
+    image: gabtec/ventilar:latest
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - '3400:3002'
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PASSWORD=admin
+      - DB_USER=admin
+      - DB_NAME=ventilar_db
+      - ACCESS_TOKEN_SECRET=kajsjkajskajSKajls
+      - REFRESH_TOKEN_SECRET=kajsjkajskajSKajls
+      - ACCESS_TOKEN_DURATION=10000
+      - REFRESH_TOKEN_DURATION=86400000
+
+networks:
+  default:
+    name: gabtec-vnet
+    external: true

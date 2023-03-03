@@ -23,8 +23,8 @@ import { RefreshTokenStrategy } from './jwt/refreshToken-jwt.strategy';
     //       signOptions: {
     //         expiresIn: configService.get('tokens.accessToken.duration'),
     //       },
-    //       // secret: configService.get('JWT_SECRET'),
-    //       // signOptions: { expiresIn: configService.get('JWT_DURATION') },
+    //       // secret: configService.get('ACCESS_TOKEN_SECRET'),
+    //       // signOptions: { expiresIn: configService.get('ACCESS_TOKEN_DURATION') },
     //     };
     //   },
     // }),

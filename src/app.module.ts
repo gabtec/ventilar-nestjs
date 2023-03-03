@@ -12,7 +12,7 @@ import configuration from './config/configuration';
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
-      load: [configuration],
+      // load: [configuration],
       isGlobal: true, // this avoids having to import ConfigModule in other modules
       // ignoreEnvFile: true, // in production ignore env because docker e.g. will inject env in another way
     }),
@@ -21,20 +21,23 @@ import configuration from './config/configuration';
       inject: [ConfigService],
       useFactory: (configService: any) => {
         return {
-          // type: 'postgres',
-          type: configService.get('database.driver'),
-          // host: configService.get('DB_HOST', 'localhost'),
-          host: configService.get('database.host'),
-          // port: parseInt(configService.get('DB_PORT', '5432'), 10),
-          port: configService.get('database.port'),
-          // username: configService.get('DB_USER'),
-          username: configService.get('database.user'),
-          // password: configService.get('DB_PASSWORD'),
-          password: configService.get('database.password'),
-          // database: configService.get('DB_NAME'),
-          database: configService.get('database.name'),
+          type: configService.get('DB_DRIVER', 'postgres'),
+          host: configService.get('DB_HOST', 'localhost'),
+          port: parseInt(configService.get('DB_PORT', '5432'), 10),
+          username: configService.get('DB_USER'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_NAME'),
           autoLoadEntities: true,
-          synchronize: configService.get('database.disableOrmSync'), // TODO: disable in production
+          synchronize:
+            configService.get('NODE_ENV') === 'production' ? false : true,
+          // type: 'postgres',
+          // type: configService.get('database.driver'),
+          // host: configService.get('database.host'),
+          // port: configService.get('database.port'),
+          // username: configService.get('database.user'),
+          // password: configService.get('database.password'),
+          // database: configService.get('database.name'),
+          // migrationsRun: true,
         };
       },
     }),

@@ -1,6 +1,6 @@
-import { User } from 'src/users/entities/user.entity';
-import { Ventilator } from 'src/ventilators/entities/ventilator.entity';
-import { Ward } from 'src/wards/entities/ward.entity';
+import { User } from '../../users/entities/user.entity';
+import { Ventilator } from '../../ventilators/entities/ventilator.entity';
+import { Ward } from '../../wards/entities/ward.entity';
 import {
   Column,
   CreateDateColumn,

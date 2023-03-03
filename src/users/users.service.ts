@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { User } from './entities/user.entity';
-import * as bcrypt from 'bcryptjs';
+// import * as bcrypt from 'bcryptjs';
 import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
 
@@ -117,8 +117,9 @@ export class UsersService {
 
     // const hash = await this.cryptoService.hashPassword(changePasswDto.password);
 
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(changePasswDto.password, salt);
+    // const salt = await bcrypt.genSalt();
+    // const hash = await bcrypt.hash(changePasswDto.password, salt);
+    const hash = await argon2.hash(changePasswDto.password);
 
     return await this.usersRepository.update(userId, {
       password_hash: hash,
@@ -126,7 +127,7 @@ export class UsersService {
   }
 
   async register(userDto: RegisterUserDto) {
-    if (!this.configService.get('allowUserSelfRegistration')) {
+    if (!this.configService.get('ALLOW_USER_SELF_REGISTRATION')) {
       throw new NotFoundException('Route Not Found!');
     }
 

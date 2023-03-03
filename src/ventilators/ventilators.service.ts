@@ -90,7 +90,7 @@ export class VentilatorsService {
   }
 
   async clearTable() {
-    const runningMode = this.configService.get('mode');
+    const runningMode = this.configService.get('NODE_ENV');
     console.log(runningMode);
 
     if (runningMode !== 'test') {

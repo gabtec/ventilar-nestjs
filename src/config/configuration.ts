@@ -14,8 +14,8 @@ export default function () {
     },
     tokens: {
       accessToken: {
-        secret: process.env.JWT_SECRET,
-        duration: process.env.JWT_DURATION || '2m',
+        secret: process.env.ACCESS_TOKEN_SECRET,
+        duration: process.env.ACCESS_TOKEN_DURATION || '2m',
       },
       refreshToken: {
         secret: process.env.REFRESH_TOKEN_SECRET,

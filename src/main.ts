@@ -34,10 +34,19 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
 
-  const PORT = configService.get('port');
+  const PORT = configService.get('API_SRV_PORT');
   await app.listen(PORT, async () => {
-    console.log(`Server listening at: ${await app.getUrl()}`);
-    console.log(`Server listening in: "${configService.get('mode')}" mode`);
+    if (configService.get('NODE_ENV') === 'development') {
+      console.log(`Server listening at: ${await app.getUrl()}`);
+      console.log(
+        `Server listening in: "${configService.get('NODE_ENV')}" mode`,
+      );
+      console.log(
+        `Database name [${configService.get(
+          'DB_DRIVER',
+        )}]: "${configService.get('DB_NAME')}"`,
+      );
+    }
   });
 }
 
