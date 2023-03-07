@@ -111,7 +111,10 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>('ACCESS_TOKEN_DURATION'),
+          expiresIn: this.configService.get<string>(
+            'ACCESS_TOKEN_DURATION',
+            '1m',
+          ),
           // secret: this.configService.get<string>('tokens.accessToken.secret'),
           // expiresIn: this.configService.get<string>(
           //   'tokens.accessToken.duration',
@@ -126,7 +129,10 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>('REFRESH_TOKEN_DURATION'),
+          expiresIn: this.configService.get<string>(
+            'REFRESH_TOKEN_DURATION',
+            '1d',
+          ),
           // expiresIn: '7d',
           // secret: this.configService.get<string>('tokens.refreshToken.secret'),
           // expiresIn: this.configService.get<string>(

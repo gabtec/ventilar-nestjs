@@ -26,7 +26,7 @@ import configuration from './config/configuration';
           port: parseInt(configService.get('DB_PORT', '5432'), 10),
           username: configService.get('DB_USER'),
           password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_NAME'),
+          database: configService.get('DB_NAME', 'ventilar_db'),
           autoLoadEntities: true,
           synchronize:
             configService.get('NODE_ENV') === 'production' ? false : true,
