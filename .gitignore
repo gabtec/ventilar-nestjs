@@ -1,3 +1,7 @@
+# training
+z_typeorm
+uTest__old
+
 # env
 .env*
 !.env.example

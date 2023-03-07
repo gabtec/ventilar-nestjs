@@ -32,7 +32,7 @@
     "db:seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed -d ./dist/data-source.js",
     "separator2": "-----------------------------",
     "m:clear": "npx typeorm-ts-node-commonjs -d ./src/database/data-source.ts cache:clear",
-    "m:gen": "npx typeorm-ts-node-commonjs -d ./src/database/data-source.ts migration:generate ./src/database/migrations/new-def",
+    "m:gen": "npx typeorm-ts-node-commonjs -d ./src/database/data-source.ts migration:generate ./src/database/migrations/default",
     "m:run": "npx typeorm-ts-node-commonjs -d ./src/database/data-source.ts migration:run",
     "m:seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js -d ./src/database/data-source.ts seed",
     "separator4": "-----------------------------",

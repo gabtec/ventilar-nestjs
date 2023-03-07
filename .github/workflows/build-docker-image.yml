@@ -1,0 +1,27 @@
+name: Build Docker Image CI
+
+on: workflow_dispatch
+# on:
+#   push:
+#     branches: [ "main" ]
+# pull_request:
+#   branches: [ "main" ]
+
+# workflow global variables
+env:
+  REG_URL: reg.gabtec.pt/xgeeks/
+  REG_USER: xpto
+  REG_PASSW: xpto
+  PROJ_NAME: gh-ventilar-api
+  PROJ_VERSION: v0.0.5
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Print the Docker image
+        run: echo $REG_URL$PROJ_NAME:$PROJ_VERSION
+      # - name: Build the Docker image
+      #   run: docker build . --file Dockerfile --tag $REG_URL$PROJ_NAME:$PROJ_VERSION
