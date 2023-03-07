@@ -6,7 +6,9 @@ import { Order } from '../orders/entities/order.entity';
 import { User } from '../users/entities/user.entity';
 import { Ventilator } from '../ventilators/entities/ventilator.entity';
 import { Ward } from '../wards/entities/ward.entity';
-// import 'dotenv/config'
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.development' });
 
 // const port = process.env.DB_PORT as number | undefined
 
@@ -19,12 +21,13 @@ const options: DataSourceOptions & SeederOptions = {
   database: (process.env.DB_NAME as any) || 'ventilar_db', // process.env.DB_NAME
   // entities: [`../**/entities/*.{ts,js}`],
   // entities: [`${__dirname}/../**/entities/*.{ts,js}`],
-  entities: [User, Ward, Ventilator, Order],
-  // migrations: [`./migrations/*.{ts,js}`],
-  migrations: [`${__dirname}/dist/database/migrations/*.{ts,js}`],
+  // entities: [User, Ward, Ventilator, Order],
+  entities: [`${__dirname}/../**/*.entity.{ts,js}`],
+  migrations: [`${__dirname}/migrations/*.{ts,js}`],
+  // migrations: [`${__dirname}/dist/database/migrations/*.{ts,js}`],
   seeds: [MainSeeder],
   // entities: [`${__dirname}/dist/src/**/entities/*.{ts,js}`],
   // migrations: [`${__dirname}/**/migrations/*.{ts,js}`],
 };
-
+console.log(options);
 export const AppDataSource = new DataSource(options);
