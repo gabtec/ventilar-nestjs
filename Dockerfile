@@ -26,7 +26,7 @@ COPY package*.json ./
 
 # RUN npm install --only=production --silent
 # RUN npm cache clean --force
-RUN npm ci
+RUN npm ci --silent
 
 COPY --chown=node:node --from=build-api-stage /usr/src/api/dist ./dist
 COPY --chown=node:node --from=build-api-stage /usr/src/api/package.json .
