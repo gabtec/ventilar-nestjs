@@ -14,18 +14,6 @@ env:
   REG_PASSW: xpto
   PROJ_NAME: gh-ventilar-api
   PROJ_VERSION: v0.0.5
-  NODE_ENV: production
-  API_SRV_PORT: 3002
-  DB_DRIVER: postgres
-  DB_HOST: localhost
-  DB_PORT: 5432
-  DB_USER: admin
-  DB_PASSWORD: admin
-  DB_NAME: ventilar_db
-  ACCESS_TOKEN_SECRET: foo
-  ACCESS_TOKEN_DURATION: 600000 #10m
-  REFRESH_TOKEN_SECRET: bar
-  REFRESH_TOKEN_DURATION: 86400000 #1d
 
 jobs:
   build:
@@ -35,6 +23,21 @@ jobs:
       - uses: actions/checkout@v3
       - name: Print the Docker image
         run: echo $REG_URL$PROJ_NAME:$PROJ_VERSION
+      - name: Create env.production file
+        run: |
+          touch .env.production
+          echo API_SRV_PORT=3002 >> .env.production
+          echo DB_DRIVER=postgres >> .env.production
+          echo DB_HOST=localhost >> .env.production
+          echo DB_PORT=5432 >> .env.production
+          echo DB_USER=admin >> .env.production
+          echo DB_PASSWORD=admin >> .env.production
+          echo DB_NAME=ventilar_db >> .env.production
+          echo ACCESS_TOKEN_SECRET=foo >> .env.production
+          echo ACCESS_TOKEN_DURATION=600000 >> .env.production
+          echo REFRESH_TOKEN_SECRET=bar >> .env.production
+          echo REFRESH_TOKEN_DURATION=86400000 >> .env.production
+
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag $REG_URL$PROJ_NAME:$PROJ_VERSION
