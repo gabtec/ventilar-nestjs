@@ -20,12 +20,15 @@ import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 import { AccessTokenGuard } from './guards/accessToken.guard';
 import { Request, Response } from 'express';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import { CONVERTIONS } from 'src/config/constants';
 
 const cookiesDef = {
   name: 'refreshCookie',
   options: {
     httpOnly: true,
-    maxAge: 100000000,
+    maxAge:
+      parseInt(process.env.REFRESH_TOKEN_DURATION, 10) ||
+      CONVERTIONS.ONE_DAY_MS,
   },
 };
 
