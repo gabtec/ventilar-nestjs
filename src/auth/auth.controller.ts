@@ -20,22 +20,17 @@ import { LoginCredentialsDto } from './dtos/login-credentials.dto';
 import { AccessTokenGuard } from './guards/accessToken.guard';
 import { Request, Response } from 'express';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
-import { CONVERTIONS } from 'src/config/constants';
+import { ConfigService } from '@nestjs/config';
 
-const cookiesDef = {
-  name: 'refreshCookie',
-  options: {
-    httpOnly: true,
-    maxAge:
-      parseInt(process.env.REFRESH_TOKEN_DURATION, 10) ||
-      CONVERTIONS.ONE_DAY_MS,
-  },
-};
+const cookieName = 'refreshCookie';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly config: ConfigService,
+  ) {}
 
   @ApiResponse({
     status: 200,
@@ -51,7 +46,16 @@ export class AuthController {
     try {
       const data = await this.authService.login(credentialsDto);
 
-      response.cookie(cookiesDef.name, data.refreshToken, cookiesDef.options);
+      // const cookieMaxAge =
+      //   parseInt(this.config.get('REFRESH_TOKEN_DURATION'), 10) ||
+      //   CONVERTIONS.ONE_DAY_MS;
+
+      // response.cookie(cookieName, data.refreshToken, {
+      //   httpOnly: true,
+      //   maxAge: cookieMaxAge,
+      // });
+      this.setCookie(response, data.refreshToken);
+
       return {
         user: data.user,
         accessToken: data.accessToken,
@@ -77,7 +81,7 @@ export class AuthController {
     // console.log(req.user);
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
-    const refreshToken = req.user['refreshToken'];
+    const refreshToken = req.user[cookieName];
 
     // console.log(req.user);
     try {
@@ -86,9 +90,17 @@ export class AuthController {
         refreshToken,
       );
 
-      response.clearCookie('refreshCookie');
-      response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
+      response.clearCookie(cookieName);
 
+      // const cookieMaxAge =
+      //   parseInt(this.config.get('REFRESH_TOKEN_DURATION'), 10) ||
+      //   CONVERTIONS.ONE_DAY_MS;
+
+      // response.cookie(cookieName, tokens.refreshToken, {
+      //   httpOnly: true,
+      //   maxAge: cookieMaxAge,
+      // });
+      this.setCookie(response, tokens.refreshToken);
       // console.log('/refresh ====> AT');
       // console.log(tokens.accessToken);
       // console.log('/refresh ====> RT cookie 2');
@@ -110,7 +122,7 @@ export class AuthController {
     // console.log(req.user);
     // const userId = req.user['sub'];
     const userMec = req.user['mec'];
-    const refreshToken = req.user['refreshToken'];
+    const refreshToken = req.user[cookieName];
 
     // console.log(req.user);
     try {
@@ -119,8 +131,9 @@ export class AuthController {
         refreshToken,
       );
 
-      response.clearCookie('refreshCookie');
-      response.cookie(cookiesDef.name, tokens.refreshToken, cookiesDef.options);
+      response.clearCookie(cookieName);
+      // response.cookie(cookieName, tokens.refreshToken, cookiesDef.options);
+      this.setCookie(response, tokens.refreshToken);
 
       // console.log('/refresh ====> AT');
       // console.log(tokens.accessToken);
@@ -159,9 +172,20 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     // clear cookie
-    response.clearCookie('refreshCookie');
+    response.clearCookie(cookieName);
 
     // clear database token
     return await this.authService.logout(req.user['sub']);
+  }
+
+  // Helper function
+  setCookie(response: Response, refreshToken) {
+    const cookieMaxAge =
+      parseInt(this.config.get('REFRESH_TOKEN_DURATION'), 10) || 86400;
+
+    response.cookie(cookieName, refreshToken, {
+      httpOnly: true,
+      maxAge: cookieMaxAge,
+    });
   }
 }

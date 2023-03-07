@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import configuration from 'src/config/configuration';
 import { Ward } from 'src/wards/entities/ward.entity';
 import { Repository } from 'typeorm';
 import { CreateVentilatorDto } from './dtos/create-ventilator.dto';

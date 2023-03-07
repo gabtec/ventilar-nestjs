@@ -6,13 +6,11 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
 import { VentilatorsModule } from './ventilators/ventilators.module';
-import configuration from './config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
-      // load: [configuration],
       isGlobal: true, // this avoids having to import ConfigModule in other modules
       // ignoreEnvFile: true, // in production ignore env because docker e.g. will inject env in another way
     }),

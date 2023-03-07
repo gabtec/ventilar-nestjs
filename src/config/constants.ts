@@ -1,4 +1,0 @@
-export const CONVERTIONS = {
-  ONE_DAY_MS: 86400000,
-  ONE_MIN_MS: 60000,
-};
