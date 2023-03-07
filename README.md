@@ -15,8 +15,50 @@ v.pARk for short is a app that allows users to manage ventilation equipments in 
 
 ## Database schema
 
-- t_services
+- t_wards
 - t_users (must always start with a admin user)
+- t_ventilators
+- t_orders
+
+## Deploy using containers
+
+This project has a built in github actions workflow that builds docker images
+To use those images you can use this command:
+
+```sh
+$ docker run -p 3002:3002 --env-file .env.production --name ventilar-api <registry>/ventilar-api:latest
+```
+
+.env.production file example
+
+```sh
+# can be ignored, since we must explicitly set this env vars
+NODE_ENV=production
+
+# required
+DB_USER=admin
+# required
+DB_PASSWORD=admin
+# required
+DB_HOST=localhost
+# can be ignored, default is ventilar_db
+DB_NAME=ventilar_db
+# can be ignored, default is 5432
+DB_PORT=5432
+# can be ignored, default is postgres (at the moment, also the only supported)
+DB_DRIVER=postgres
+# can be ignored, default is 3002
+API_SRV_PORT=3002
+
+# required
+ACCESS_TOKEN_SECRET=<some-token>
+# can be ignored, default is 1 minute
+ACCESS_TOKEN_DURATION=600000
+# required
+REFRESH_TOKEN_SECRET=<some-token>
+# can be ignored, default is 1 day
+REFRESH_TOKEN_DURATION=86400000
+```
 
 ## Tests
 
