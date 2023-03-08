@@ -20,8 +20,8 @@ jobs:
     #     - POSTGRES_DB=ventilar_db_test
     services:
       image: postgres:15.1-alpine
-      ports:
-        - '5432:5432'
+      env:
+        PORT: 5432
       environment:
         - POSTGRES_PASSWORD=admin
         - POSTGRES_USER=admin
