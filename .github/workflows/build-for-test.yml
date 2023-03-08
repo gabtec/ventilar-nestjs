@@ -50,6 +50,6 @@ jobs:
       - name: Run db migrations
         run: npm run migration:run
       - name: Run db seeds
-        uses: npm run test:db:seed
+        run: npm run test:db:seed
       - name: Run tests
         run: npm run test
