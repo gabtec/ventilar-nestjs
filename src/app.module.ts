@@ -28,13 +28,6 @@ import { VentilatorsModule } from './ventilators/ventilators.module';
           autoLoadEntities: true,
           synchronize:
             configService.get('NODE_ENV') === 'production' ? false : true,
-          // type: 'postgres',
-          // type: configService.get('database.driver'),
-          // host: configService.get('database.host'),
-          // port: configService.get('database.port'),
-          // username: configService.get('database.user'),
-          // password: configService.get('database.password'),
-          // database: configService.get('database.name'),
           // migrationsRun: true,
         };
       },

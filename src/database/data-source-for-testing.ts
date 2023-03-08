@@ -12,7 +12,7 @@ const options: DataSourceOptions & SeederOptions = {
   port: (process.env.DB_PORT as any) || 5432,
   username: (process.env.DB_USER as any) || 'admin',
   password: (process.env.DB_PASSWORD as any) || 'admin',
-  database: (process.env.DB_NAME as any) || 'ventilar_db',
+  database: (process.env.DB_NAME as any) + '_test' || 'ventilar_db_test',
   entities: [`./dist/**/*.entity.js`],
   synchronize: false,
   migrations: [`./dist/database/migrations/*.{js,ts}`],
