@@ -41,7 +41,10 @@ jobs:
           echo ACCESS_TOKEN_DURATION=60 >> .env
           echo REFRESH_TOKEN_SECRET=bar >> .env
           echo REFRESH_TOKEN_DURATION=86400 >> .env
+          cat .env
 
+      - name: Run install
+        run: npm install --quiet
       - name: Run build
         run: npm run build
       - name: Generate db migrations
