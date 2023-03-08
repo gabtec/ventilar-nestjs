@@ -36,7 +36,7 @@ jobs:
           echo DB_PORT=5432 >> .env
           echo DB_USER=admin >> .env
           echo DB_PASSWORD=admin >> .env
-          echo DB_NAME=ventilar_db >> .env
+          echo DB_NAME=ventilar_db_test >> .env
           echo ACCESS_TOKEN_SECRET=foo >> .env
           echo ACCESS_TOKEN_DURATION=60 >> .env
           echo REFRESH_TOKEN_SECRET=bar >> .env
@@ -59,6 +59,6 @@ jobs:
       - name: Run db migrations
         run: npm run migration:run
       - name: Run db seeds
-        run: npm run test:db:seed
+        run: npm run db:seed
       - name: Run tests
         run: npm run test
