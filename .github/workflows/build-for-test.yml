@@ -43,7 +43,14 @@ jobs:
           echo REFRESH_TOKEN_DURATION=86400 >> .env
           cat .env
 
+      - name: Cache dependencies
+        id: cached-install
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-${{ hashFiles('**/package-lock.json') }}
       - name: Run install
+        if: steps.cached-install.outputs.cache-hit != 'true'
         run: npm install --quiet
       - name: Run build
         run: npm run build
