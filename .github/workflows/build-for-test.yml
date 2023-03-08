@@ -2,10 +2,10 @@ name: Build For E2E Testing CI
 
 on: workflow_dispatch
 
-env:
-  REG_URL: reg.gabtec.pt/xgeeks/
-  PROJ_NAME: gh-ventilar-api
-  PROJ_VERSION: v0.0.6
+# env:
+#   REG_URL: reg.gabtec.pt/xgeeks/
+#   PROJ_NAME: gh-ventilar-api
+#   PROJ_VERSION: v0.0.6
 
 jobs:
   testing:
@@ -61,4 +61,4 @@ jobs:
       - name: Run db seeds
         run: npm run db:seed
       - name: Run tests
-        run: npm run test
+        run: npm run test:e2e
