@@ -11,19 +11,20 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     services:
-      image: postgres:15.1-alpine
-      ports:
-        - 5432: 5432
-      env:
-        POSTGRES_PASSWORD: admin
-        POSTGRES_USER: admin
-        POSTGRES_DB: ventilar_db_test
-      # Set health checks to wait until postgres has started
-      options: >-
-        --health-cmd pg_isready
-        --health-interval 10s
-        --health-timeout 5s
-        --health-retries 5
+      db:
+        image: postgres:15.1-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: admin
+          POSTGRES_USER: admin
+          POSTGRES_DB: ventilar_db_test
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: create env file for testing
