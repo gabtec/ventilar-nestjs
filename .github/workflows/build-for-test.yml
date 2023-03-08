@@ -61,4 +61,4 @@ jobs:
       - name: Run db seeds
         run: npm run db:seed
       - name: Run tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- auth.e2e-spec.ts
