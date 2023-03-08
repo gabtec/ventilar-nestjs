@@ -36,7 +36,7 @@ jobs:
           echo DB_PORT=5432 >> .env
           echo DB_USER=admin >> .env
           echo DB_PASSWORD=admin >> .env
-          echo DB_NAME=ventilar_db_test >> .env
+          echo DB_NAME=ventilar_db >> .env
           echo ACCESS_TOKEN_SECRET=foo >> .env
           echo ACCESS_TOKEN_DURATION=60 >> .env
           echo REFRESH_TOKEN_SECRET=bar >> .env
