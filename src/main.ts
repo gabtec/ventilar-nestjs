@@ -35,6 +35,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const PORT = configService.get('API_SRV_PORT');
+
   await app.listen(PORT, async () => {
     if (configService.get('NODE_ENV') === 'development') {
       console.log(`Server listening at: ${await app.getUrl()}`);

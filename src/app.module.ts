@@ -10,7 +10,8 @@ import { VentilatorsModule } from './ventilators/ventilators.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.env.${process.env.NODE_ENV}`,
+      envFilePath: `.env`,
+      // envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true, // this avoids having to import ConfigModule in other modules
       // ignoreEnvFile: true, // in production ignore env because docker e.g. will inject env in another way
     }),
