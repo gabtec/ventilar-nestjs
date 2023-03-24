@@ -20,6 +20,19 @@ v.pARk for short is a app that allows users to manage ventilation equipments in 
 - t_ventilators
 - t_orders
 
+## Database pg_dumps
+
+Added a container volume called /backups to extract pg_dump files
+The commands used are:
+
+```sh
+# dumps only schemas (including create db), ignoring migrations tables
+$ pg_dump -U <user> -d ventilar_db -sC --exclude-table=public.migrations* -f backups/dump_v1.sql
+
+# dumps only data (for seeds purposes), ignoring migrations tables
+$ pg_dump -U <user> -d ventilar_db -a --exclude-table=public.migrations* -f backups/data_v1.sql
+```
+
 ## Deploy using containers
 
 This project has a built in github actions workflow that builds docker images

@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ventilar-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ventilar-api
+  template:
+    metadata:
+      labels:
+        app: ventilar-api
+    spec:
+      containers:
+        - image: ventilar-api
+          name: ventilar-api
+          ports:
+            - containerPort: 3002

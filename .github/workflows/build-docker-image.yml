@@ -9,42 +9,48 @@ on: workflow_dispatch
 
 # workflow global variables
 env:
-  REG_URL: reg.gabtec.pt/xgeeks/
-  PROJ_NAME: gh-ventilar-api
-  PROJ_VERSION: v0.0.6
+  REG_URL: gabtec/oss-xgeeks
+  PROJ_NAME: ventilar-api
+  # PROJ_VERSION: v0.0.6
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Print the Docker image
-        run: echo $REG_URL$PROJ_NAME:$PROJ_VERSION
-      # - name: Create env.production file
-      #   run: |
-      #     touch .env.production
-      #     echo API_SRV_PORT=3002 >> .env.production
-      #     echo DB_DRIVER=postgres >> .env.production
-      #     echo DB_HOST=localhost >> .env.production
-      #     echo DB_PORT=5432 >> .env.production
-      #     echo DB_USER=admin >> .env.production
-      #     echo DB_PASSWORD=admin >> .env.production
-      #     echo DB_NAME=ventilar_db >> .env.production
-      #     echo ACCESS_TOKEN_SECRET=foo >> .env.production
-      #     echo ACCESS_TOKEN_DURATION=60 >> .env.production
-      #     echo REFRESH_TOKEN_SECRET=bar >> .env.production
-      #     echo REFRESH_TOKEN_DURATION=86400 >> .env.production
-
-      - name: Build the Docker image
-        run: |
-          docker build . --file Dockerfile --tag $REG_URL$PROJ_NAME:$PROJ_VERSION --tag $REG_URL$PROJ_NAME:latest
-      - name: Login to Harbor
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          registry: reg.gabtec.pt
+          registry: ${{ secrets.REG_URL }}
           username: ${{ secrets.REG_USER }}
-          password: ${{ secrets.REG_PASSW }}
-      - name: Upload to registry
+          password: ${{ secrets.REG_PASS }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ secrets.REG_URL }}/goapp:latest, ${{ secrets.REG_URL }}/goapp:${{ github.sha }}
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Kustomize in this worker
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: v5.0.1 #sos
+      - name: Runs Kustomize to update k8s manifest file
         run: |
-          docker push $REG_URL$PROJ_NAME --all-tags
+          cd k8s
+          kustomize edit set image ventilar-api=${REG_URL}/ventilar-api:${GITHUB_SHA}
+          cat kustomization.yaml
+      - name: Commit changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "CD Action"
+          git commit -am "ci: update `ventilar-api` image tag"
+      # git push vai falhar porque no meu repo um user desconhecido is not allowed to push
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        # must go to repo > settings > general (scroll down) and allow workflow permissions to write

@@ -4,24 +4,26 @@ version: '3'
 services:
   db:
     image: postgres:15.1-alpine
-    container_name: vpark-pg
+    container_name: ventilar-db
     restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=ventilar_db
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./db_dump:/backups
   test-db:
     image: postgres:15.1-alpine
-    container_name: vpark-pg-test
+    container_name: ventilar-db-test
     restart: unless-stopped
     ports:
       - '5433:5432'
     environment:
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=test_ventilar_db
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
 
 networks:
   default:
