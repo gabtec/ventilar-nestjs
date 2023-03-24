@@ -24,9 +24,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ vars.DOCKER_USER }}
-          # username: ${{ secrets.REG_USER }}
-          password: ${{ secrets.REG_PASS }}
-          # registry: ${{ env.REG_URL }}
+          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
