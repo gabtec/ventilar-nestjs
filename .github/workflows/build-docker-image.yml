@@ -9,9 +9,7 @@ on:
 
 # workflow global variables
 env:
-  REG_URL: gabtec/oss-xgeeks
-  PROJ_NAME: ventilar-api
-  # PROJ_VERSION: v0.0.6
+  REG_URL: gabtec/ventilar-api
 
 jobs:
   build:
@@ -27,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ env.REG_URL }}/${{ env.PROJ_NAME }}:latest, ${{ env.REG_URL }}/${{ env.PROJ_NAME }}:${{ github.sha }}
+          tags: ${{ env.REG_URL }}:latest, ${{ env.REG_URL }}:${{ github.sha }}
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
@@ -42,7 +40,7 @@ jobs:
       - name: Runs Kustomize to update k8s manifest file
         run: |
           cd k8s
-          kustomize edit set image ventilar-api=${REG_URL}/ventilar-api:${GITHUB_SHA}
+          kustomize edit set image ventilar-api=${REG_URL}:${GITHUB_SHA}
           cat kustomization.yaml
       - name: Commit changes
         run: |
